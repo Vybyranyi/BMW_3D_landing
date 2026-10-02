@@ -221,9 +221,97 @@ a {
   opacity: 1;
 }
 
+.nav__burger,
+.nav__extra {
+  display: none;
+}
+
+/* Phones: solid bar once the page scrolls under it, links in a full-screen menu. */
+@media (max-width: 860px) {
+  .nav {
+    transition: background 0.3s, border-color 0.3s, padding 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.is-solid {
+    mix-blend-mode: normal;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background: rgba(7, 8, 10, 0.82);
+    border-bottom-color: var(--line);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+}
+
 @media (max-width: 640px) {
+  .nav__logo,
+  .nav__burger {
+    position: relative;
+    z-index: 1;
+  }
+  .nav__burger {
+    display: grid;
+    place-content: center;
+    gap: 6px;
+    width: 44px;
+    height: 44px;
+    margin: -10px -10px -10px 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .nav__burger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    border-radius: 2px;
+    background: #fff;
+    transition: transform 0.35s var(--ease);
+  }
+  .nav.is-open .nav__burger span:first-child {
+    transform: translateY(4px) rotate(45deg);
+  }
+  .nav.is-open .nav__burger span:last-child {
+    transform: translateY(-4px) rotate(-45deg);
+  }
+  .nav.is-open {
+    mix-blend-mode: normal;
+    background: transparent;
+    border-bottom-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .nav__links {
-    display: none;
+    position: fixed;
+    inset: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 80px var(--gutter) 40px;
+    background: var(--bg);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s var(--ease), visibility 0s 0.35s;
+  }
+  .nav.is-open .nav__links {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s var(--ease);
+  }
+  .nav__links a,
+  .nav__extra {
+    display: block;
+    padding: 10px 0;
+    font: 600 clamp(30px, 10vw, 44px) / 1.1 var(--display);
+    letter-spacing: -0.02em;
+    text-transform: none;
+    opacity: 1;
+    transform: translateY(14px);
+    transition: transform 0.5s var(--ease);
+  }
+  .nav.is-open .nav__links a {
+    transform: none;
   }
 }
 
@@ -1564,6 +1652,80 @@ a {
 
 .footer__row a {
   text-decoration: none;
+}
+
+/* ------------------------------------------------------------ phones */
+@media (max-width: 640px) {
+  .journey__stats {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .journey__stats div b {
+    font-size: 19px;
+    white-space: nowrap;
+  }
+  .journey__stats div span {
+    display: block;
+    margin-top: 4px;
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
+  }
+
+  .counters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-radius: 16px;
+  }
+  .counter {
+    padding: 16px 12px;
+  }
+  .counter b {
+    font-size: 26px;
+  }
+  .counter span {
+    margin-top: 6px;
+    font-size: 11.5px;
+    line-height: 1.3;
+  }
+
+  /* Stage tabs bleed to the screen edges and fade out where they scroll. */
+  .tabs {
+    margin-left: calc(-1 * var(--gutter));
+    margin-right: calc(-1 * var(--gutter));
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+    scroll-padding: 0 var(--gutter);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 var(--gutter), #000 calc(100% - var(--gutter)), transparent);
+  }
+  .tab {
+    padding: 11px 16px;
+  }
+  .tab-panel {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+
+  .mod {
+    gap: 6px 14px;
+    padding: 16px 0;
+  }
+  .mod:hover {
+    padding-left: 0;
+  }
+  .mod__badge {
+    margin-top: 4px;
+  }
+
+  .dyno {
+    padding: 16px 12px;
+  }
+
+  .hotspot__label {
+    padding: 5px 8px;
+    font-size: 10px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

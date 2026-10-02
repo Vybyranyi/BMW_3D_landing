@@ -88,12 +88,17 @@ export function initRestoration() {
   let current = -1;
   function select(i, focus = false) {
     if (i === current) return;
+    const first = current === -1;
     current = i;
     buttons.forEach((b, k) => {
       b.setAttribute('aria-selected', String(k === i));
       b.tabIndex = k === i ? 0 : -1;
     });
     if (focus) buttons[i].focus();
+    // Keep the chosen tab in view when the row scrolls sideways (phones).
+    const tr = tabs.getBoundingClientRect();
+    const br = buttons[i].getBoundingClientRect();
+    tabs.scrollTo({ left: tabs.scrollLeft + br.left - tr.left - (tr.width - br.width) / 2, behavior: first ? 'auto' : 'smooth' });
     panel.classList.add('is-swapping');
     setTimeout(() => {
       render(RESTORATION[i]);

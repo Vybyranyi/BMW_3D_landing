@@ -19,6 +19,18 @@ requestAnimationFrame(raf);
 lenis.stop();
 if (import.meta.env.DEV) window.__lenis = lenis;
 
+// Phone menu.
+const nav = document.querySelector('.nav');
+const burger = document.getElementById('navBurger');
+function setMenu(open) {
+  nav.classList.toggle('is-open', open);
+  burger.setAttribute('aria-expanded', String(open));
+  if (open) lenis.stop();
+  else if (!document.body.classList.contains('is-loading')) lenis.start();
+}
+burger.addEventListener('click', () => setMenu(!nav.classList.contains('is-open')));
+window.addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
+
 // Anchor links go through Lenis for smooth travel.
 document.querySelectorAll('a[href^="#"]').forEach((a) => {
   a.addEventListener('click', (e) => {
@@ -26,14 +38,17 @@ document.querySelectorAll('a[href^="#"]').forEach((a) => {
     const el = id === '#top' ? 0 : document.querySelector(id);
     if (el === null) return;
     e.preventDefault();
+    setMenu(false);
     lenis.scrollTo(el, { duration: 1.6 });
   });
 });
 
-// Thin M-striped page progress bar.
+// Thin M-striped page progress bar; the nav turns solid once it sits over the page content.
 const bar = document.querySelector('.page-progress span');
+const showroom = document.querySelector('.showroom');
 lenis.on('scroll', ({ progress }) => {
   bar.style.transform = `scaleX(${progress})`;
+  nav.classList.toggle('is-solid', showroom.getBoundingClientRect().bottom < 60);
 });
 
 initPassport();

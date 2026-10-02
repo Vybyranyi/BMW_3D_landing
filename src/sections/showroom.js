@@ -111,8 +111,36 @@ export function initShowroom({ onReady, scrollTo }) {
     el.innerHTML = `<span class="hotspot__dot"></span><span class="hotspot__label">${h.label}</span>`;
     hotspotsEl.appendChild(el);
     const chapter = CHAPTERS.find((c) => c.id === h.chapter);
-    return { el, chapter, pos: new THREE.Vector3(...h.at) };
+    return { el, label: el.querySelector('.hotspot__label'), labelW: 0, chapter, pos: new THREE.Vector3(...h.at) };
   });
+
+  /* Puts a hotspot label on the side of its dot where it stays on screen and clear of the labels
+     already placed this frame; a label too wide for both sides goes under its dot, and a label
+     that still overlaps another one moves down. */
+  function placeLabel(hs, x, y, w, placed) {
+    const lw = (hs.labelW ||= hs.label.offsetWidth);
+    const m = 8;
+    const span = (flip) => (flip ? [x - 14 - lw, x - 14] : [x + 14, x + 14 + lw]);
+    const inside = ([a, b]) => a >= m && b <= w - m;
+    const clash = ([a, b], ly) => placed.some((q) => a < q.b && b > q.a && y + ly - 14 < q.y1 && y + ly + 14 > q.y0);
+    const pref = x > w * 0.625;
+    const side = [pref, !pref].find((f) => inside(span(f)) && !clash(span(f), 0)) ?? [pref, !pref].find((f) => inside(span(f)));
+    const flip = side ?? false;
+    let [a, b] = span(flip);
+    let lx = 0;
+    let ly = 0;
+    if (side === undefined) {
+      // Too wide for either side: centre it under the dot.
+      lx = Math.min(w - m - lw, Math.max(m, x - lw / 2)) - a;
+      ly = 26;
+    }
+    a += lx;
+    b += lx;
+    while (ly < 120 && clash([a, b], ly)) ly += 30;
+    placed.push({ a, b, y0: y + ly - 14, y1: y + ly + 14 });
+    hs.el.classList.toggle('is-flipped', flip);
+    hs.label.style.translate = lx || ly ? `${lx}px ${ly}px` : '';
+  }
 
   const sectionTop = () => section.getBoundingClientRect().top + window.scrollY;
   const scrollable = () => section.offsetHeight - window.innerHeight;
@@ -166,7 +194,10 @@ export function initShowroom({ onReady, scrollTo }) {
     pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
   });
   new IntersectionObserver(([e]) => (visible = e.isIntersecting), { threshold: 0 }).observe(section);
-  window.addEventListener('resize', () => stage.resize());
+  window.addEventListener('resize', () => {
+    stage.resize();
+    hotspots.forEach((hs) => (hs.labelW = 0));
+  });
 
   function updateScroll() {
     const s = scrollable();
@@ -237,7 +268,8 @@ export function initShowroom({ onReady, scrollTo }) {
     shake = Math.max(0, shake - dt * 1.6);
     const [az, el, distRaw, tx, ty, tz] = camera(p);
     const aspect = stage.camera.aspect;
-    const dist = distRaw * (aspect < 1.35 ? Math.min(2.1, Math.pow(1.35 / aspect, 0.8)) : 1);
+    // Narrower than landscape: back off so the car keeps fitting across (portrait phones ≈ ×2.5).
+    const dist = distRaw * (aspect >= 1.35 ? 1 : Math.max(Math.pow(1.35 / aspect, 0.8), (1.35 / aspect) * 0.85));
     const azR = THREE.MathUtils.degToRad(az + pointer.sx * 4 + Math.sin(t * 0.25) * 1.2);
     const elR = THREE.MathUtils.degToRad(clamp(el - pointer.sy * 2.5 + Math.sin(t * 0.33) * 0.6, 1, 88));
     stage.camera.position.set(
@@ -255,6 +287,8 @@ export function initShowroom({ onReady, scrollTo }) {
 
     // Hotspots
     stage.camera.updateMatrixWorld();
+    const placed = []; // dots first, so labels keep clear of every dot
+    const shown = [];
     for (const hs of hotspots) {
       const on = hs.chapter && activeId === hs.chapter.id;
       let show = false;
@@ -262,12 +296,16 @@ export function initShowroom({ onReady, scrollTo }) {
         tmp.copy(hs.pos).project(stage.camera);
         show = tmp.z < 1 && Math.abs(tmp.x) < 0.95 && Math.abs(tmp.y) < 0.9;
         if (show) {
-          hs.el.style.transform = `translate(${((tmp.x + 1) / 2) * w}px, ${((1 - tmp.y) / 2) * h}px)`;
-          hs.el.classList.toggle('is-flipped', tmp.x > 0.25);
+          const x = ((tmp.x + 1) / 2) * w;
+          const y = ((1 - tmp.y) / 2) * h;
+          hs.el.style.transform = `translate(${x}px, ${y}px)`;
+          shown.push([hs, x, y]);
+          placed.push({ a: x - 9, b: x + 9, y0: y - 9, y1: y + 9 });
         }
       }
       hs.el.classList.toggle('is-visible', show);
     }
+    for (const [hs, x, y] of shown) placeLabel(hs, x, y, w, placed);
 
     stage.render();
   }

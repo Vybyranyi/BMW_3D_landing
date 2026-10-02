@@ -5,9 +5,10 @@ const RPM = [1000, 1450, 2000, 3000, 4000, 4800, 5200, 6000, 6500, 7000];
 const TORQUE = [230, 350, 350, 350, 350, 350, 340, 294, 272, 240];
 const POWER = RPM.map((r, i) => Math.round(((TORQUE[i] * r) / 9549) * 1.36));
 
-function dyno(svg) {
-  const W = 640;
-  const H = 360;
+/* Drawn at the rendered width so axis text keeps its real size on phones. */
+function dyno(svg, W) {
+  const H = Math.round(Math.min(360, Math.max(230, W * 0.56)));
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   const pad = { l: 44, r: 44, t: 20, b: 34 };
   const x = (r) => pad.l + ((r - 1000) / 6000) * (W - pad.l - pad.r);
   const yT = (v) => H - pad.b - (v / 400) * (H - pad.t - pad.b);
@@ -89,7 +90,16 @@ export function initPassport() {
     .join('');
 
   const svg = document.getElementById('dyno');
-  dyno(svg);
+  let dynoW = 0;
+  const drawDyno = () => {
+    const w = Math.round(svg.getBoundingClientRect().width);
+    if (!w || Math.abs(w - dynoW) < 24) return;
+    dynoW = w;
+    dyno(svg, Math.max(300, w));
+    if (svg.closest('.dyno').classList.contains('is-in')) svg.querySelectorAll('.curve').forEach((p) => (p.style.strokeDashoffset = '0'));
+  };
+  drawDyno();
+  new ResizeObserver(drawDyno).observe(svg);
 
   document.getElementById('mods').innerHTML = MODS.map((m, i) => `
     <li class="mod reveal">

@@ -148,7 +148,8 @@ export function initJourney() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resize();
-  window.addEventListener('resize', resize);
+  // The globe row changes height with the stop text (and the phone toolbar), not only on window resize.
+  new ResizeObserver(resize).observe(canvas);
 
   /* Overall fraction f ∈ [0,1] along the whole trip (sea then road), by distance. */
   const pointAt = (f) => (f <= seaShare ? sea.at(f / seaShare) : road.at((f - seaShare) / (1 - seaShare)));
