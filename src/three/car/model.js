@@ -4,6 +4,8 @@ import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 import MODEL_URL from '../../assets/models/f30.glb?url';
+import { roundelTexture } from './materials.js';
+import { CAR } from '../../content.js';
 
 /* Axle/tyre geometry of the built model (metres, car frame: +x forward, +y up, +z right). */
 const AXLE_X = 1.4046;
@@ -18,6 +20,8 @@ function createMaterials() {
   const m = {
     paint: new THREE.MeshPhysicalMaterial({ color: 0xf4f5f3, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 }),
     gloss: new THREE.MeshPhysicalMaterial({ color: 0x050506, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.05 }),
+    // window surrounds (Shadowline): black, but not a mirror for the studio lights
+    trim: new THREE.MeshPhysicalMaterial({ color: 0x060607, roughness: 0.3, clearcoat: 0.5, clearcoatRoughness: 0.25, envMapIntensity: 0.35 }),
     blade: new THREE.MeshPhysicalMaterial({ color: 0x030304, roughness: 0.45, clearcoat: 0.4, clearcoatRoughness: 0.3, envMapIntensity: 0.15 }),
     black: new THREE.MeshStandardMaterial({ color: 0x0b0b0c, roughness: 0.5 }),
     satin: new THREE.MeshStandardMaterial({ color: 0x141518, roughness: 0.6, metalness: 0.1 }),
@@ -27,7 +31,7 @@ function createMaterials() {
     mirror: new THREE.MeshStandardMaterial({ color: 0xcfd6de, roughness: 0.02, metalness: 1 }),
     headInner: new THREE.MeshStandardMaterial({ color: 0x2a2d32, roughness: 0.25, metalness: 0.8 }),
     interior: new THREE.MeshStandardMaterial({ color: 0x141416, roughness: 0.62, metalness: 0.02 }),
-    headliner: new THREE.MeshStandardMaterial({ color: 0xece9e2, roughness: 0.95 }),
+    headliner: new THREE.MeshStandardMaterial({ color: 0x161618, roughness: 0.95 }), // black headliner
     glass: new THREE.MeshPhysicalMaterial({
       color: 0x0d1116, roughness: 0.04, transparent: true, opacity: 0.72, envMapIntensity: 0.9, depthWrite: false,
     }),
@@ -37,8 +41,7 @@ function createMaterials() {
     }),
     drl: new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xe4f0ff, emissiveIntensity: 0 }),
     indicator: new THREE.MeshStandardMaterial({ color: 0x7a4a00, emissive: 0xff8a00, emissiveIntensity: 0.2 }),
-    // fog lamp: polished reflector that lights up with the headlights
-    fog: new THREE.MeshStandardMaterial({ color: 0xc9d0d8, roughness: 0.15, metalness: 0.9, emissive: 0xf4f7ff, emissiveIntensity: 0 }),
+    fog: new THREE.MeshStandardMaterial({ color: 0x6f767e, roughness: 0.18, metalness: 1 }), // unlit fog lamp reflector
     reflector: new THREE.MeshPhysicalMaterial({ color: 0x7a0008, roughness: 0.25, clearcoat: 1, emissive: 0x300003 }),
     tailDark: new THREE.MeshStandardMaterial({ color: 0x1a0204, roughness: 0.35, metalness: 0.3 }),
     tailLed: new THREE.MeshStandardMaterial({ color: 0x3a0000, emissive: 0xff0000, emissiveIntensity: 0 }),
@@ -75,7 +78,64 @@ function hinge(car, object, at) {
   object.position.sub(at);
   pivot.add(object);
   car.add(pivot);
+  // Extra things that ride on the panel are authored in car space (glTF nodes carry meshopt
+  // dequantisation transforms, so they can't be parents for car-space objects).
+  pivot.userData.space = new THREE.Group();
+  pivot.userData.space.position.copy(at).negate();
+  pivot.add(pivot.userData.space);
   return pivot;
+}
+
+/** Ukrainian number plate (520×110 mm): blue UA band on the left, black characters. */
+function plateTexture(text) {
+  const c = document.createElement('canvas');
+  c.width = 1040;
+  c.height = 220;
+  const g = c.getContext('2d');
+  g.fillStyle = '#111';
+  g.beginPath();
+  g.roundRect(0, 0, 1040, 220, 22);
+  g.fill();
+  g.fillStyle = '#f7f7f4';
+  g.beginPath();
+  g.roundRect(8, 8, 1024, 204, 16);
+  g.fill();
+  g.fillStyle = '#1d4fa5';
+  g.beginPath();
+  g.roundRect(14, 14, 112, 192, 10);
+  g.fill();
+  g.fillStyle = '#0057b7';
+  g.fillRect(34, 40, 72, 26);
+  g.fillStyle = '#ffd500';
+  g.fillRect(34, 66, 72, 26);
+  g.fillStyle = '#fff';
+  g.font = 'bold 56px Arial, sans-serif';
+  g.textAlign = 'center';
+  g.fillText('UA', 70, 170);
+  g.fillStyle = '#111';
+  g.textBaseline = 'middle';
+  g.font = 'bold 168px "DIN Condensed", "Arial Narrow", Arial, sans-serif';
+  const w = g.measureText(text).width;
+  g.save();
+  g.translate(583, 116);
+  g.scale(Math.min(1, 860 / w), 1);
+  g.fillText(text, 0, 0);
+  g.restore();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  return t;
+}
+
+/** Flat badge/plate placed on a surface point, facing along its normal. */
+function stick(mesh, pos, normal, lift = 0.004) {
+  const n = new THREE.Vector3(...normal).normalize();
+  mesh.position.set(...pos).addScaledVector(n, lift);
+  // +z of the badge along the normal, keeping it upright (+y as close to world up as possible)
+  const x = new THREE.Vector3(0, 1, 0).cross(n).normalize();
+  const y = n.clone().cross(x);
+  mesh.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, n));
+  return mesh;
 }
 
 export async function loadCar({ onProgress } = {}) {
@@ -122,7 +182,8 @@ export async function loadCar({ onProgress } = {}) {
     const wheel = new THREE.Group();
     wheel.position.set(x, AXLE_Y, z);
     const spinner = new THREE.Group();
-    const rim = template.clone();
+    const rim = new THREE.Group();
+    rim.add(template.clone());
     // Template faces the car's left (-z); right-hand wheels are turned around.
     if (z > 0) rim.rotation.y = Math.PI;
     spinner.add(rim);
@@ -158,6 +219,23 @@ export async function loadCar({ onProgress } = {}) {
         new THREE.Vector3(tipBox.min.x - 0.02, tipY, tipBox.max.z - tipW * 0.25),
       ];
 
+  // BMW roundels (bonnet nose + trunk) and number plates — measured on the model surfaces.
+  const roundelMat = new THREE.MeshStandardMaterial({ map: roundelTexture(), roughness: 0.25, metalness: 0.35 });
+  const trunkSpace = trunk.userData.space;
+  car.add(stick(new THREE.Mesh(new THREE.CircleGeometry(0.041, 48), roundelMat), [2.124, 0.745, 0], [0.634, 0.774, 0], 0.012));
+  trunkSpace.add(stick(new THREE.Mesh(new THREE.CircleGeometry(0.046, 48), roundelMat), [-2.3497, 0.9788, 0], [-0.99, -0.14, 0], 0.004));
+  const plateMat = new THREE.MeshStandardMaterial({ map: plateTexture(CAR.plate), roughness: 0.45, metalness: 0.05 });
+  const plate = () => {
+    const g = new THREE.Group();
+    g.add(new THREE.Mesh(new THREE.PlaneGeometry(0.52, 0.11), plateMat));
+    const back = new THREE.Mesh(new RoundedBoxGeometry(0.535, 0.125, 0.012, 2, 0.006), m.satin);
+    back.position.z = -0.007;
+    g.add(back);
+    return g;
+  };
+  car.add(stick(plate(), [2.168, 0.49, 0], [1, -0.05, 0], 0.012));
+  trunkSpace.add(stick(plate(), [-2.3171, 0.7859, 0], [-0.967, 0.256, 0], 0.012));
+
   // Courtesy lights for the open-door shot.
   const courtesy = new THREE.PointLight(0xffe2c0, 0, 2.6, 1.6);
   courtesy.position.set(-0.3, 1.2, 0);
@@ -177,7 +255,7 @@ export async function loadCar({ onProgress } = {}) {
     }
     courtesy.intensity = Math.max(state.doorF, state.doorR) * 2.2;
     m.drl.emissiveIntensity = state.lights * 5;
-    m.fog.emissiveIntensity = state.lights * 2.4;
+
     m.tailLed.emissiveIntensity = state.lights * 1.6 + state.brake * 5;
     m.tailLens.emissiveIntensity = state.lights * 0.3 + state.brake * 0.9;
   }

@@ -18,18 +18,20 @@ export const PARTS = [
     part: 'body', src: 'k108', mat: 'paint',
     // 551 = strut-tower brace (not on my car), 553/568 = roll cage
     skip: [551, 553, 568, 556, 567, 554, 557, 558, 559, 564, 566],
-    // 549 = roof strips + shark fin (body colour), 560 = interior pillar trims (black)
-    over: { 549: 'paint', 550: 'satin', 552: 'satin', 555: 'interior', 560: 'interior', 561: 'satin', 562: 'satin', 563: 'metal', 565: 'under', 569: 'satin' },
+    // 549 = trim set: window-surround mouldings (black), roof strips + shark fin (white, masks below)
+    // 560 = interior pillar trims (black)
+    over: { 549: 'trim', 550: 'satin', 552: 'satin', 555: 'interior', 560: 'interior', 561: 'satin', 562: 'satin', 563: 'metal', 565: 'under', 569: 'satin' },
     masks: [
       { mesh: 548, mat: 'interior', min: [-0.0275, -0.0425, 0.2625], max: [-0.0175, -0.0383, 0.269] }, // rear-view mirror
       { mesh: 549, mat: 'satin', min: [-1, -0.0545, 0.2835], max: [1, -0.05, 0.2975] }, // wipers + cowl seal
-      { mesh: 549, mat: 'skip', min: [-0.0445, -0.043, 0.21], max: [-0.0375, -0.034, 0.275] }, // roof strips: none
-      { mesh: 549, mat: 'skip', min: [-0.0075, -0.043, 0.21], max: [-0.0005, -0.034, 0.275] },
+      { mesh: 549, mat: 'paint', min: [-0.0425, -0.0395, 0.219], max: [-0.0365, -0.034, 0.265] }, // roof strips, body colour
+      { mesh: 549, mat: 'paint', min: [-0.0085, -0.0395, 0.219], max: [-0.0025, -0.034, 0.265] },
+      { mesh: 549, mat: 'paint', min: [-0.0250, -0.0372, 0.216], max: [-0.0200, -0.033, 0.230] }, // shark fin
     ],
   },
   { part: 'body', src: 'g50.1', mat: 'paint', off: [0.064621, -0.07687, 0] }, // flat roof with a real sunroof opening
   { part: 'body', src: 'g67', mat: 'glassRoof', off: [0.0646, -0.12035, 0] }, // closed sunroof glass, flush
-  { part: 'body', src: 'g68.0', mat: 'headliner', off: [0.1201, 0, 0] }, // white headliner with sunroof opening
+  { part: 'body', src: 'g68.0', mat: 'headliner', off: [0.1201, 0, 0] }, // black headliner with sunroof opening
   { part: 'body', src: 'g19.17', mat: 'paint', off: [DX19, 0, 0] }, // plain front fenders
   { part: 'body', src: 'g19.18', mat: 'paint', off: [DX19, 0, 0] },
   {
@@ -49,8 +51,8 @@ export const PARTS = [
   { part: 'body', src: 'g19.16', mat: 'headInner', off: [DX19, 0, 0], over: { 144: 'black', 146: 'drl', 147: 'drl', 148: 'chrome', 149: LENS } },
   { part: 'body', src: 'k64', mat: 'paint', over: { 386: 'blade' } }, // white sills + black M Performance blades
   { part: 'body', src: 'g6.3', mat: 'paint', off: [DX19, 0, 0], over: { 26: 'satin', 27: 'reflector' } }, // M Sport rear bumper (catalogue C)
-  { part: 'body', src: 'm256', mat: 'chrome', off: [0.004, 0, 0.001] }, // dual exhaust tips, left (catalogue F)
-  { part: 'body', src: 'k12', mat: 'gloss' }, // diffuser (catalogue A)
+  { part: 'body', src: 'm256', mat: 'chrome', off: [0.0011, 0.00045, 0.001] }, // dual exhaust tips, left (catalogue F), in the diffuser recess
+  { part: 'body', src: 'g22.6', mat: 'gloss', off: [0, 0, 0.0705] }, // diffuser (catalogue D)
   // outer taillights: the L-shaped light guide (437) glows, the back plates (434/435) stay dark red
   { part: 'body', src: 'k85', mat: 'tailDark', over: { 433: 'headInner', 434: 'tailDark', 435: 'tailDark', 436: 'tailLed', 437: 'tailLed' } },
   { part: 'body', src: 'k89', mat: 'tailDark', mirrorOf: 'k85' },
@@ -85,7 +87,7 @@ export const PARTS = [
 
   {
     part: 'doorFL', src: 'k98', mat: 'paint',
-    over: { 507: 'gloss', 508: 'gloss', 509: 'satin', 510: 'interior', 511: 'satin', 512: 'interior', 513: 'interior', 514: 'satin', 515: 'interior' },
+    over: { 507: 'trim', 508: 'trim', 509: 'satin', 510: 'interior', 511: 'satin', 512: 'interior', 513: 'interior', 514: 'satin', 515: 'interior' },
     masks: [{ mesh: 506, mat: 'interior', min: [-1, -1, -1], max: [0.0006, 1, 1] }], // cabin side of the frame
   },
   { part: 'doorFL', src: 'k100', mat: 'glass' },
@@ -93,7 +95,7 @@ export const PARTS = [
   { part: 'doorFL', src: 'k152', mat: 'gloss', over: { 729: 'satin', 730: 'mirror' } }, // black M-style mirror with the fin
   {
     part: 'doorFR', src: 'k103', mat: 'paint',
-    over: { 532: 'gloss', 533: 'gloss', 534: 'satin', 535: 'interior', 536: 'gloss', 537: 'interior', 538: 'interior', 539: 'interior' },
+    over: { 532: 'trim', 533: 'trim', 534: 'satin', 535: 'interior', 536: 'trim', 537: 'interior', 538: 'interior', 539: 'interior' },
     masks: [{ mesh: 531, mat: 'interior', min: [-0.0455, -1, -1], max: [1, 1, 1] }],
   },
   { part: 'doorFR', src: 'k105', mat: 'glass' },
@@ -101,14 +103,14 @@ export const PARTS = [
   { part: 'doorFR', src: 'k151', mat: 'gloss', over: { 725: 'satin', 726: 'mirror' } },
   {
     part: 'doorRL', src: 'k96', mat: 'paint',
-    over: { 498: 'gloss', 499: 'satin', 500: 'interior', 501: 'gloss', 502: 'interior', 503: 'interior' },
+    over: { 498: 'trim', 499: 'satin', 500: 'interior', 501: 'trim', 502: 'interior', 503: 'interior' },
     masks: [{ mesh: 497, mat: 'interior', min: [-1, -1, -1], max: [0.0006, 1, 1] }],
   },
   { part: 'doorRL', src: 'k97', mat: 'glass' },
   { part: 'doorRL', src: 'k168', mat: 'paint' },
   {
     part: 'doorRR', src: 'k101', mat: 'paint',
-    over: { 523: 'gloss', 524: 'satin', 525: 'interior', 526: 'gloss', 527: 'interior', 528: 'interior' },
+    over: { 523: 'trim', 524: 'satin', 525: 'interior', 526: 'trim', 527: 'interior', 528: 'interior' },
     masks: [{ mesh: 522, mat: 'interior', min: [-0.0455, -1, -1], max: [1, 1, 1] }],
   },
   { part: 'doorRR', src: 'k102', mat: 'glass' },

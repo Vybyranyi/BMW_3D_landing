@@ -13,6 +13,7 @@ export const CAR = {
   drive: 'Задній привід',
   gearbox: '8-ступенева Steptronic (ZF 8HP)', // ПЕРЕВІР: автомат чи механіка?
   exhaust: 'left-dual', // ПЕРЕВІР: два патрубки зліва ('left-dual') чи по одному з боків ('split')
+  plate: 'CE 5061 CH', // ПЕРЕВІР: на українських номерах лише кирилиця-латиниця (А В С Е Н І К М О Р Т Х), «SE … SN» = «СЕ … СН»?
   purchased: '2026-04-15',
   arrived: '2026-08-19',
 };
@@ -60,8 +61,8 @@ export const CHAPTERS = [
     to: 0.54,
     side: 'right',
     title: 'Салон',
-    text: 'Чорний салон, світла стеля і люк над головою. Кермо M Performance — місце водія найкраще в цій машині.',
-    tags: ['Чорний салон', 'Біла стеля', 'Люк', 'Кермо M Performance'],
+    text: 'Чорний салон, чорна стеля і люк над головою. Кермо M Performance — місце водія найкраще в цій машині.',
+    tags: ['Чорний салон', 'Чорна стеля', 'Люк', 'Кермо M Performance'],
   },
   {
     id: 'profile',
@@ -149,7 +150,7 @@ export const MODS = [
   { name: 'Задній дифузор', detail: 'M Performance', status: 'installed' },
   { name: 'Кермо', detail: 'M Performance', status: 'installed' },
   { name: 'Ніздрі', detail: 'Чорні', status: 'installed' },
-  { name: 'Люк', detail: 'Електричний, біла стеля', status: 'stock' },
+  { name: 'Люк', detail: 'Електричний, чорна стеля', status: 'stock' },
 ];
 
 /*

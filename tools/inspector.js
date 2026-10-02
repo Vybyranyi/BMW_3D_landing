@@ -343,7 +343,7 @@ window.resolveConfig = () => {
 };
 
 const PREVIEW = {
-  paint: 0xf2f2f2, gloss: 0x0a0a0a, blade: 0x050505, fog: 0xdde3ea, reflector: 0x990011, satin: 0x2a2b2e, black: 0x111111, under: 0x1a1a1a, glass: 0x334455,
+  paint: 0xf2f2f2, gloss: 0x0a0a0a, trim: 0x101010, blade: 0x050505, fog: 0xdde3ea, reflector: 0x990011, satin: 0x2a2b2e, black: 0x111111, under: 0x1a1a1a, glass: 0x334455,
   glassRoof: 0x111122, glassClear: 0x99bbdd, headliner: 0xf4f1ea, interior: 0x222222, metal: 0x777a80,
   chrome: 0xcccccc, mirror: 0xaabbcc, headInner: 0x555555, drl: 0x99ddff, tailDark: 0x330000, tailLed: 0xff3300,
   tailLens: 0xcc0011, indicator: 0xffaa00, rim: 0xb0b3b8, disc: 0x666666,
