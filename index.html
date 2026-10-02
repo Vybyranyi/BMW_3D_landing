@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>BMW 330i F30 — з Каліфорнії до Чернівців</title>
+    <meta name="description" content="Моя BMW 330i F30 2016: B48, задній привід, M-пакет і M Performance. Шлях з Лос-Анджелеса до Чернівців і журнал відновлення." />
+    <meta name="theme-color" content="#07080a" />
+    <meta property="og:title" content="BMW 330i F30 — з Каліфорнії до Чернівців" />
+    <meta property="og:description" content="B48, задній привід, M Performance. 17 000 км і 126 днів дороги додому." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2307080a'/%3E%3Crect x='6' y='9' width='6' height='14' fill='%2381c4ff'/%3E%3Crect x='13' y='9' width='6' height='14' fill='%2316588e'/%3E%3Crect x='20' y='9' width='6' height='14' fill='%23e7222e'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="page-progress" aria-hidden="true"><span></span></div>
+
+    <div class="loader" id="loader">
+      <div class="loader__inner">
+        <div class="loader__mark">F30<span>/</span>330i</div>
+        <div class="loader__bar"><span></span></div>
+        <div class="loader__text">Збираю машину по деталях…</div>
+      </div>
+    </div>
+
+    <header class="nav">
+      <a class="nav__logo" href="#top" aria-label="На початок">
+        <span class="mstripe" aria-hidden="true"><i></i><i></i><i></i></span>
+        F30 <b>330i</b>
+      </a>
+      <nav class="nav__links" aria-label="Розділи">
+        <a href="#top">Машина</a>
+        <a href="#passport">Паспорт</a>
+        <a href="#journey">Шлях</a>
+        <a href="#restoration">Відновлення</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- 3D showroom: scroll drives the camera and the car -->
+      <section class="showroom" id="top">
+        <div class="showroom__sticky">
+          <canvas class="showroom__canvas" id="stage" aria-label="3D-модель BMW 330i F30"></canvas>
+          <div class="showroom__vignette" aria-hidden="true"></div>
+
+          <div class="hero" id="hero">
+            <p class="hero__kicker mono" data-hero="kicker"></p>
+            <h1 class="hero__title" data-hero="title"></h1>
+            <p class="hero__lead" data-hero="lead"></p>
+            <div class="hero__hint mono"><span class="hero__line"></span><span data-hero="hint"></span></div>
+          </div>
+
+          <button class="engine-btn" id="engineBtn" type="button" aria-pressed="false">
+            <span class="engine-btn__ring"></span>
+            <span class="engine-btn__label">ENGINE<br /><b>START</b><br />STOP</span>
+          </button>
+
+          <div class="chapters" id="chapters"></div>
+          <div class="hotspots" id="hotspots" aria-hidden="true"></div>
+          <ol class="rail" id="rail" aria-label="Розділи сцени"></ol>
+        </div>
+      </section>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee__track">
+          <span>Los Angeles</span><i>→</i><span>Панамський канал</span><i>→</i><span>Атлантика</span><i>→</i><span>Klaipėda</span><i>→</i><span>Чернівці</span><i>→</i>
+          <span>Los Angeles</span><i>→</i><span>Панамський канал</span><i>→</i><span>Атлантика</span><i>→</i><span>Klaipėda</span><i>→</i><span>Чернівці</span><i>→</i>
+        </div>
+      </div>
+
+      <!-- Specs -->
+      <section class="section passport" id="passport">
+        <div class="section__head">
+          <p class="eyebrow mono">Паспорт</p>
+          <h2 class="section__title">Цифри, які<br />відчуваєш спиною</h2>
+        </div>
+        <div class="bignums" id="bignums"></div>
+        <div class="passport__grid">
+          <figure class="dyno reveal">
+            <figcaption>
+              <span class="mono">B48B20 · заводські криві (орієнтовно)</span>
+              <span class="dyno__legend"><i class="lg-power"></i>Потужність, к.с. <i class="lg-torque"></i>Момент, Нм</span>
+            </figcaption>
+            <svg id="dyno" viewBox="0 0 640 360" role="img" aria-label="Графік потужності та крутного моменту B48"></svg>
+          </figure>
+          <dl class="spec-table reveal" id="specTable"></dl>
+        </div>
+      </section>
+
+      <!-- Journey -->
+      <section class="journey" id="journey">
+        <div class="journey__sticky">
+          <div class="journey__head">
+            <p class="eyebrow mono">Шлях додому</p>
+            <h2 class="section__title">Лос-Анджелес → Чернівці</h2>
+            <div class="journey__stats" id="journeyStats"></div>
+          </div>
+          <div class="journey__globe">
+            <canvas id="globe" aria-label="Глобус з маршрутом доставки"></canvas>
+            <div class="journey__odo mono"><span id="odoKm">0</span> км</div>
+          </div>
+          <ol class="journey__stops" id="journeyStops"></ol>
+        </div>
+      </section>
+
+      <!-- Restoration -->
+      <section class="section restoration" id="restoration">
+        <div class="section__head">
+          <p class="eyebrow mono">Відновлення</p>
+          <h2 class="section__title">Повертаємо форму</h2>
+          <p class="section__lead">З 19 серпня машина в роботі. Тут — етапи, що вже зроблено і що попереду. Сторінка оновлюється разом з машиною.</p>
+        </div>
+        <div class="resto-top">
+          <div class="resto-progress reveal">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle cx="60" cy="60" r="52" class="ring-bg" />
+              <circle cx="60" cy="60" r="52" class="ring-fg" id="restoRing" />
+            </svg>
+            <div class="resto-progress__val"><b id="restoPct">0</b><span>%</span></div>
+            <p class="mono">готовність</p>
+          </div>
+          <div class="counters reveal" id="counters"></div>
+        </div>
+        <div class="tabs" id="restoTabs" role="tablist" aria-label="Етапи відновлення"></div>
+        <div class="tab-panel" id="restoPanel" role="tabpanel"></div>
+      </section>
+
+      <!-- Build sheet -->
+      <section class="section build" id="build">
+        <div class="section__head">
+          <p class="eyebrow mono">Що на ній</p>
+          <h2 class="section__title">M Performance<br />і трохи характеру</h2>
+        </div>
+        <ul class="mods" id="mods"></ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer__big">F30 · 330i</div>
+      <div class="footer__row mono">
+        <span>Лос-Анджелес → Чернівці · 2026</span>
+        <span class="mstripe" aria-hidden="true"><i></i><i></i><i></i></span>
+        <a href="#top">Нагору ↑</a>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
