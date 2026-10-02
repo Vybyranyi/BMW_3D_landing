@@ -28,12 +28,6 @@ export const PARTS = [
       { mesh: 549, mat: 'paint', min: [-0.0085, -0.0395, 0.219], max: [-0.0048, -0.034, 0.265] },
       { mesh: 549, mat: 'paint', min: [-0.0401, -0.0395, 0.219], max: [-0.0364, -0.034, 0.265] },
       { mesh: 549, mat: 'paint', min: [-0.0250, -0.0372, 0.216], max: [-0.0200, -0.033, 0.230] }, // shark fin
-      // roof rail between the strip and the window moulding: black, so the window surround reads as one wide band
-      ...[[-1, -0.0058], [1, -0.0391]].flatMap(([sx, x]) => [
-        { mesh: 547, mat: 'trim', planes: [{ n: [sx, 0, 0], p: [x, 0, 0] }, { n: [0, -1, 0], p: [0, -0.0376, 0] }, { n: [0, 0, 1], p: [0, 0, 0.2645] }, { n: [0, 0, -1], p: [0, 0, 0.23] }] },
-        // towards the C-pillar the moulding drops, so the lower edge follows it down
-        { mesh: 547, mat: 'trim', planes: [{ n: [sx, 0, 0], p: [x, 0, 0] }, { n: [0, -1, 0.1818], p: [0, -0.0376, 0.23] }, { n: [0, 0, 1], p: [0, 0, 0.23] }, { n: [0, 0, -1], p: [0, 0, 0.2185] }] },
-      ]),
     ],
   },
   { part: 'body', src: 'g50.1', mat: 'paint', off: [0.064621, -0.07687, 0] }, // flat roof with a real sunroof opening
