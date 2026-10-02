@@ -336,7 +336,7 @@ window.resolveConfig = () => {
       const mat = over[id] || p.mat;
       if (mat === 'skip') continue;
       const masks = (p.masks || []).filter((mk) => mk.mesh === id).map(({ mat: mm, min, max, planes }) => ({ mat: mm, min, max, planes }));
-      out.push({ id, node: M[id].node, part: p.part, mat, off: offset, ...(masks.length ? { masks } : {}) });
+      out.push({ id, node: M[id].node, part: p.part, mat, off: offset, ...(masks.length ? { masks } : {}), ...(p.scale ? { scale: p.scale, pivot: p.pivot } : {}) });
     }
   }
   return out;
@@ -362,7 +362,7 @@ window.previewConfig = () => {
   return entries.length;
 };
 window.exportConfig = async () => {
-  const entries = resolveConfig().map(({ node, part, mat, off, masks }) => ({ node, part, mat, off, masks }));
+  const entries = resolveConfig().map(({ node, part, mat, off, masks, scale, pivot }) => ({ node, part, mat, off, masks, scale, pivot }));
   await fetch('/__save?file=f30-selection.json', { method: 'POST', body: JSON.stringify({ frame: FRAME, entries }) });
   return entries.length;
 };
@@ -425,3 +425,72 @@ window.catalogPNG = async (file, title, list, dir) => {
   labels.forEach((l) => l.remove());
   return list.map((u, i) => `${letters[i]}=${u.code}`).join(' ');
 };
+
+// --- browse mode for the owner: click a part → see its code; keys to hide / isolate / focus
+const help = document.createElement('div');
+help.style.cssText =
+  'position:fixed;right:10px;top:10px;max-width:340px;padding:12px 14px;border-radius:10px;background:#111c;color:#e8e8e8;font:13px/1.5 system-ui,sans-serif;pointer-events:none';
+help.innerHTML = `<b>Набір деталей F30 — повна модель</b><br>
+Миша: обертати · колесо: zoom · права кнопка: зсув<br>
+<b>Клік</b> — вибрати деталь (код зверху зліва)<br>
+<b>H</b> — сховати вибрану · <b>I</b> — показати лише її<br>
+<b>F</b> — наблизити до неї · <b>Esc</b> — показати все<br>
+<b>C</b> — моя поточна збірка · <b>A</b> — увесь набір`;
+document.body.appendChild(help);
+const card = document.createElement('div');
+card.style.cssText =
+  'position:fixed;left:10px;bottom:10px;padding:10px 14px;border-radius:10px;background:#111d;color:#fff;font:600 18px/1.4 system-ui,sans-serif;pointer-events:none;display:none';
+document.body.appendChild(card);
+
+let unitIndex = null;
+let selected = null;
+const selMat = new THREE.MeshStandardMaterial({ color: 0xff2a55, emissive: 0x550011, roughness: 0.4, side: THREE.DoubleSide });
+function unitOf(id) {
+  if (!unitIndex) {
+    unitIndex = new Map();
+    for (const u of units()) u.ids.forEach((i) => unitIndex.set(i, u));
+  }
+  return unitIndex.get(id);
+}
+function paintSelection() {
+  M.forEach((m) => (m.obj.material = m.origMat));
+  if (selected) selected.ids.forEach((i) => (M[i].obj.material = selMat));
+  render();
+}
+let down = null;
+canvas.addEventListener('pointerdown', (e) => (down = [e.clientX, e.clientY]));
+canvas.addEventListener('pointerup', (e) => {
+  if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return;
+  const id = pick(e.clientX, e.clientY);
+  selected = id === null ? null : unitOf(id) || { code: `m${id}`, ids: [id] };
+  if (selected) {
+    const s = selected.size || M[id].box.getSize(new THREE.Vector3()).multiplyScalar(1000);
+    card.textContent = `${selected.code}   ·   сітка m${id}   ·   ${selected.ids.length} шт.   ·   ${s.x.toFixed(0)}×${s.y.toFixed(0)}×${s.z.toFixed(0)}`;
+    card.style.display = 'block';
+  } else card.style.display = 'none';
+  info.textContent = '';
+  paintSelection();
+});
+addEventListener('keydown', (e) => {
+  const k = e.key.toLowerCase();
+  if (k === 'h' && selected) {
+    selected.ids.forEach((i) => (M[i].obj.visible = false));
+    selected = null;
+    card.style.display = 'none';
+    paintSelection();
+  } else if (k === 'i' && selected) {
+    showOnly(selected.ids);
+    frame(boxOf(selected.ids));
+    render();
+  } else if (k === 'f' && selected) {
+    frame(boxOf(selected.ids));
+    render();
+  } else if (k === 'escape' || k === 'a') {
+    for (const [id, pos] of moved) M[id].obj.position.copy(pos);
+    moved.clear();
+    showAll();
+    if (k === 'a') frame(ALL);
+  } else if (k === 'c') {
+    previewConfig();
+  }
+});

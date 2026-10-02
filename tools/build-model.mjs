@@ -61,9 +61,11 @@ for (const e of entries) {
     const srcPos = [];
     const carPos = [];
     const carNor = [];
+    const pivot = e.scale ? new Vector3(...e.pivot) : null;
     for (let i = 0; i < P.getCount(); i++) {
       v.fromArray(P.getElement(i, tmp)).applyMatrix4(world).add(off);
-      srcPos.push(v.clone());
+      srcPos.push(v.clone()); // masks are tested on the unscaled placement
+      if (pivot) v.sub(pivot).multiplyScalar(e.scale).add(pivot);
       carPos.push(toCar(v, e.part));
       if (N) {
         n.fromArray(N.getElement(i, tmp)).applyMatrix3(nmat).normalize();

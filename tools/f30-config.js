@@ -51,7 +51,12 @@ export const PARTS = [
   { part: 'body', src: 'g19.16', mat: 'headInner', off: [DX19, 0, 0], over: { 144: 'black', 146: 'drl', 147: 'drl', 148: 'chrome', 149: LENS } },
   { part: 'body', src: 'k64', mat: 'paint', over: { 386: 'blade' } }, // white sills + black M Performance blades
   { part: 'body', src: 'g6.3', mat: 'paint', off: [DX19, 0, 0], over: { 26: 'satin', 27: 'reflector' } }, // M Sport rear bumper (catalogue C)
-  { part: 'body', src: 'm256', mat: 'chrome', off: [0.0011, 0.00045, 0.001] }, // dual exhaust tips, left (catalogue F), in the diffuser recess
+  {
+    // exhaust: one tip on the left, in the diffuser recess — the inner tip of the pair is cut away, the outer one shrunk 20 %
+    part: 'body', src: 'm256', mat: 'chrome', off: [0.0011, -0.0004, 0.001],
+    masks: [{ mesh: 256, mat: 'skip', planes: [{ n: [1, 0, 0], p: [-0.0115, 0, 0] }] }],
+    scale: 0.8, pivot: [-0.0099, -0.0694, 0.1848],
+  },
   { part: 'body', src: 'g22.6', mat: 'gloss', off: [0, 0, 0.0705] }, // diffuser (catalogue D)
   // outer taillights: the L-shaped light guide (437) glows, the back plates (434/435) stay dark red
   { part: 'body', src: 'k85', mat: 'tailDark', over: { 433: 'headInner', 434: 'tailDark', 435: 'tailDark', 436: 'tailLed', 437: 'tailLed' } },
@@ -80,6 +85,7 @@ export const PARTS = [
     part: 'trunk', src: 'k94', mat: 'paint',
     over: { 490: 'satin', 491: 'satin', 492: 'satin', 493: 'satin' },
   },
+  { part: 'trunk', src: 'k50', mat: 'gloss', off: [0, -0.00851, 0] }, // trunk lip spoiler (catalogue A), seated like k53
   { part: 'trunk', src: 'k84', mat: 'tailDark', over: { 427: 'tailLed', 428: 'tailLed', 431: 'tailLed' } }, // inner taillights
   { part: 'trunk', src: 'k88', mat: 'tailDark', mirrorOf: 'k84' },
   { part: 'trunk', src: 'k138', mat: 'tailLens', alignTo: 'k84', dy: -0.01121 },
