@@ -198,8 +198,8 @@ export async function loadCar({ onProgress } = {}) {
     wheels.push({ wheel, spinner, side: Math.sign(z), front });
   }
 
-  // Smoke emitters at the real exhaust tips (rear chrome on the body).
-  const tipBox = new THREE.Box3();
+  // Smoke emitters at the real exhaust tips (rear chrome on the body), one per side.
+  const sides = [new THREE.Box3(), new THREE.Box3()];
   const tv = new THREE.Vector3();
   parts.body.updateMatrixWorld(true);
   parts.body.traverse((o) => {
@@ -207,17 +207,13 @@ export async function loadCar({ onProgress } = {}) {
     const p = o.geometry.attributes.position;
     for (let i = 0; i < p.count; i++) {
       tv.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld);
-      if (tv.x < -2.2 && tv.y < 0.6) tipBox.expandByPoint(tv);
+      if (tv.x < -2.2 && tv.y < 0.6) sides[tv.z < 0 ? 0 : 1].expandByPoint(tv);
     }
   });
-  const tipW = tipBox.max.z - tipBox.min.z;
-  const tipY = (tipBox.min.y + tipBox.max.y) / 2;
-  const exhaustTips = tipBox.isEmpty()
-    ? [new THREE.Vector3(-2.5, 0.33, -0.4), new THREE.Vector3(-2.5, 0.33, -0.5)]
-    : [
-        new THREE.Vector3(tipBox.min.x - 0.02, tipY, tipBox.min.z + tipW * 0.25),
-        new THREE.Vector3(tipBox.min.x - 0.02, tipY, tipBox.max.z - tipW * 0.25),
-      ];
+  const exhaustTips = sides
+    .filter((b) => !b.isEmpty())
+    .map((b) => new THREE.Vector3(b.min.x - 0.02, (b.min.y + b.max.y) / 2, (b.min.z + b.max.z) / 2));
+  if (!exhaustTips.length) exhaustTips.push(new THREE.Vector3(-2.5, 0.33, -0.45));
 
   // BMW roundels (bonnet nose + trunk) and number plates — measured on the model surfaces.
   const roundelMat = new THREE.MeshStandardMaterial({ map: roundelTexture(), roughness: 0.25, metalness: 0.35 });

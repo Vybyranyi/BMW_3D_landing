@@ -13,7 +13,7 @@ export const CAR = {
   drive: 'Задній привід',
   gearbox: '8-ступенева Steptronic (ZF 8HP)', // ПЕРЕВІР: автомат чи механіка?
   exhaust: 'left-dual', // ПЕРЕВІР: два патрубки зліва ('left-dual') чи по одному з боків ('split')
-  plate: 'CE 5061 CH', // ПЕРЕВІР: на українських номерах лише кирилиця-латиниця (А В С Е Н І К М О Р Т Х), «SE … SN» = «СЕ … СН»?
+  plate: 'CE 5061 HC',
   purchased: '2026-04-15',
   arrived: '2026-08-19',
 };
@@ -81,8 +81,8 @@ export const CHAPTERS = [
     to: 0.83,
     side: 'right',
     title: 'Корма',
-    text: 'Дифузор M Performance, L-подібні LED-ліхтарі й подвійний вихлоп. Холодний старт зранку — окреме задоволення.',
-    tags: ['Дифузор M Performance', 'LED', 'Подвійний вихлоп'],
+    text: 'Дифузор M Performance, L-подібні LED-ліхтарі, спойлер на кришці й насадки вихлопу по обидва боки. Холодний старт зранку — окреме задоволення.',
+    tags: ['Дифузор M Performance', 'LED', 'Спойлер'],
   },
   {
     id: 'trunk',
@@ -116,7 +116,8 @@ export const HOTSPOTS = [
   { chapter: 'profile', label: 'Лезвія M Performance', at: [-0.2, 0.22, -0.93] },
   { chapter: 'profile', label: 'Люк', at: [0.05, 1.47, -0.15] },
   { chapter: 'rear', label: 'Дифузор M Performance', at: [-2.42, 0.28, 0.2] },
-  { chapter: 'rear', label: 'Подвійний вихлоп', at: [-2.46, 0.33, -0.45] },
+  { chapter: 'rear', label: 'Насадки вихлопу', at: [-2.46, 0.33, -0.45] },
+  { chapter: 'rear', label: 'Задній спойлер', at: [-2.3, 1.12, 0.3] },
   { chapter: 'rear', label: 'LED-ліхтарі', at: [-2.28, 0.9, -0.7] },
 ];
 
@@ -144,13 +145,14 @@ export const SPECS = {
 };
 
 export const MODS = [
-  { name: 'M-пакет', detail: 'Бампери M Sport, Shadowline, спортивна підвіска', status: 'stock' },
+  { name: 'M-пакет', detail: 'Бампери M Sport, Shadowline', status: 'installed' },
   { name: 'Передній сплітер', detail: 'M Performance, глянцевий чорний', status: 'installed' },
   { name: 'Бокові накладки («лезвія»)', detail: 'M Performance', status: 'installed' },
   { name: 'Задній дифузор', detail: 'M Performance', status: 'installed' },
   { name: 'Кермо', detail: 'M Performance', status: 'installed' },
   { name: 'Ніздрі', detail: 'Чорні', status: 'installed' },
   { name: 'Люк', detail: 'Електричний, чорна стеля', status: 'stock' },
+  { name: 'Задній спойлер', detail: 'Лип-спойлер на кришці багажника, глянцевий чорний', status: 'installed' },
 ];
 
 /*
@@ -205,25 +207,25 @@ export const RESTORATION = [
   {
     id: 'body',
     title: 'Кузов',
-    status: 'active',
-    text: 'Кузовні роботи: геометрія, панелі, зазори. Тут машина повертає свою форму.',
+    status: 'done',
+    text: 'Кузовні роботи: геометрія, панелі, зазори. Машина повернула свою форму.',
     checklist: [
-      ['Дефектовка', false],
-      ['Замовлення запчастин', false],
-      ['Кузовні роботи', false],
-      ['Перевірка зазорів', false],
+      ['Дефектовка', true],
+      ['Замовлення запчастин', true],
+      ['Кузовні роботи', true],
+      ['Перевірка зазорів', true],
     ],
   },
   {
     id: 'paint',
     title: 'Фарба',
-    status: 'planned',
-    text: 'Підготовка і фарбування в рідний білий колір. Потім — полірування.',
+    status: 'done',
+    text: 'Підготовка, фарбування в рідний білий колір і полірування.',
     checklist: [
-      ['Підбір фарби по коду', false],
-      ['Підготовка поверхонь', false],
-      ['Фарбування', false],
-      ['Полірування', false],
+      ['Підбір фарби по коду', true],
+      ['Підготовка поверхонь', true],
+      ['Фарбування', true],
+      ['Полірування', true],
     ],
   },
   {

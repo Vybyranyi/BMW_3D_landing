@@ -101,6 +101,8 @@ export function initRestoration() {
     }, panel.innerHTML ? 180 : 0);
   }
 
+  // Open on the stage in progress, otherwise on the latest finished one.
   const firstActive = RESTORATION.findIndex((s) => s.status === 'active');
-  select(firstActive >= 0 ? firstActive : 0);
+  const lastDone = RESTORATION.map((s) => s.status).lastIndexOf('done');
+  select(firstActive >= 0 ? firstActive : Math.max(0, lastDone));
 }

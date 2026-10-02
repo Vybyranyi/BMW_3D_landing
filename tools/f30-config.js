@@ -18,14 +18,12 @@ export const PARTS = [
     part: 'body', src: 'k108', mat: 'paint',
     // 551 = strut-tower brace (not on my car), 553/568 = roll cage
     skip: [551, 553, 568, 556, 567, 554, 557, 558, 559, 564, 566],
-    // 549 = trim set: window-surround mouldings (black), roof strips + shark fin (white, masks below)
+    // 549 = trim set: window-surround mouldings and roof-channel strips (black), shark fin (white, mask below)
     // 560 = interior pillar trims (black)
     over: { 549: 'trim', 550: 'satin', 552: 'satin', 555: 'interior', 560: 'interior', 561: 'satin', 562: 'satin', 563: 'metal', 565: 'under', 569: 'satin' },
     masks: [
       { mesh: 548, mat: 'interior', min: [-0.0275, -0.0425, 0.2625], max: [-0.0175, -0.0383, 0.269] }, // rear-view mirror
       { mesh: 549, mat: 'satin', min: [-1, -0.0545, 0.2835], max: [1, -0.05, 0.2975] }, // wipers + cowl seal
-      { mesh: 549, mat: 'paint', min: [-0.0425, -0.0395, 0.219], max: [-0.0365, -0.034, 0.265] }, // roof strips, body colour
-      { mesh: 549, mat: 'paint', min: [-0.0085, -0.0395, 0.219], max: [-0.0025, -0.034, 0.265] },
       { mesh: 549, mat: 'paint', min: [-0.0250, -0.0372, 0.216], max: [-0.0200, -0.033, 0.230] }, // shark fin
     ],
   },
@@ -36,11 +34,6 @@ export const PARTS = [
   { part: 'body', src: 'g19.18', mat: 'paint', off: [DX19, 0, 0] },
   {
     part: 'body', src: 'g19.20', mat: 'paint', off: [DX19, 0, 0], over: { 154: 'black', 155: 'chrome', 156: LENS, 157: 'fog' }, // M Sport front bumper
-    // M Performance splitter wraps the lower bumper corners under the fog lights (black), centre stays white
-    masks: [
-      { mesh: 153, mat: 'gloss', planes: [{ n: [0, 1, 0], p: [0, -0.0694, 0] }, { n: [0.0038, 0.0035, 0], p: [-0.0345, -0.0694, 0] }] },
-      { mesh: 153, mat: 'gloss', planes: [{ n: [0, 1, 0], p: [0, -0.0694, 0] }, { n: [-0.0038, 0.0035, 0], p: [-0.0104, -0.0694, 0] }] },
-    ],
   },
   { part: 'body', src: 'g20.0', mat: 'gloss', off: [DX19, -0.0007, -0.0424] }, // M Performance front splitter, a touch lower
   { part: 'body', src: 'g19.6', mat: 'black', off: [DX19, 0, -0.0175] }, // black kidneys
@@ -51,18 +44,16 @@ export const PARTS = [
   { part: 'body', src: 'g19.16', mat: 'headInner', off: [DX19, 0, 0], over: { 144: 'black', 146: 'drl', 147: 'drl', 148: 'chrome', 149: LENS } },
   { part: 'body', src: 'k64', mat: 'paint', over: { 386: 'blade' } }, // white sills + black M Performance blades
   { part: 'body', src: 'g6.3', mat: 'paint', off: [DX19, 0, 0], over: { 26: 'satin', 27: 'reflector' } }, // M Sport rear bumper (catalogue C)
-  {
-    // exhaust: one tip on the left, in the diffuser recess — the inner tip of the pair is cut away, the outer one shrunk 20 %
-    part: 'body', src: 'm256', mat: 'chrome', off: [0.0011, -0.0004, 0.001],
-    masks: [{ mesh: 256, mat: 'skip', planes: [{ n: [1, 0, 0], p: [-0.0115, 0, 0] }] }],
-    scale: 0.8, pivot: [-0.0099, -0.0694, 0.1848],
-  },
-  { part: 'body', src: 'g22.6', mat: 'gloss', off: [0, 0, 0.0705] }, // diffuser (catalogue D)
-  // outer taillights: the L-shaped light guide (437) glows, the back plates (434/435) stay dark red
-  { part: 'body', src: 'k85', mat: 'tailDark', over: { 433: 'headInner', 434: 'tailDark', 435: 'tailDark', 436: 'tailLed', 437: 'tailLed' } },
+  { part: 'body', src: 'g6.1', mat: 'chrome', off: [DX19, 0, 0] }, // exhaust tips that belong to this bumper, one each side
+  { part: 'body', src: 'g6.2', mat: 'chrome', off: [DX19, 0, 0] },
+  { part: 'body', src: 'g7', mat: 'gloss', off: [DX19, 0, 0.01319] }, // diffuser lip g7, in place of the bumper's own lip g6.0
+  // outer taillights: the L-shaped light guide (437) and the contour (433) glow like the inner lamps, the back plates (434/435) stay dark red
+  { part: 'body', src: 'k85', mat: 'tailDark', over: { 433: 'tailLed', 434: 'tailDark', 435: 'tailDark', 436: 'tailLed', 437: 'tailLed' } },
   { part: 'body', src: 'k89', mat: 'tailDark', mirrorOf: 'k85' },
   { part: 'body', src: 'k83', mat: 'tailLens', alignTo: 'k85', dy: -0.005377 }, // red lenses, height fitted to the housing
   { part: 'body', src: 'k86', mat: 'tailLens', alignTo: 'k89', dy: -0.006372 },
+  { part: 'body', src: 'k137', mat: 'tailLens', alignTo: 'k85', dy: -0.011444 }, // second lens layer
+  { part: 'body', src: 'k109', mat: 'tailLens', alignTo: 'k89', dy: -0.011445 },
   { part: 'body', src: 'k107', mat: 'glass' }, // windshield
   { part: 'body', src: 'k106', mat: 'glass' }, // rear window
   { part: 'body', src: 'k131', mat: 'satin' }, // wipers
@@ -85,7 +76,7 @@ export const PARTS = [
     part: 'trunk', src: 'k94', mat: 'paint',
     over: { 490: 'satin', 491: 'satin', 492: 'satin', 493: 'satin' },
   },
-  { part: 'trunk', src: 'k50', mat: 'gloss', off: [0, -0.00851, 0] }, // trunk lip spoiler (catalogue A), seated like k53
+  { part: 'trunk', src: 'k79', mat: 'gloss', off: [0, 0.00044, 0.01037] }, // trunk lip spoiler k79, seated on the trunk edge
   { part: 'trunk', src: 'k84', mat: 'tailDark', over: { 427: 'tailLed', 428: 'tailLed', 431: 'tailLed' } }, // inner taillights
   { part: 'trunk', src: 'k88', mat: 'tailDark', mirrorOf: 'k84' },
   { part: 'trunk', src: 'k138', mat: 'tailLens', alignTo: 'k84', dy: -0.01121 },
