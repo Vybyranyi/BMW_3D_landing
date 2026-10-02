@@ -55,3 +55,4 @@ function loop() {
 loop();
 window.__stage = stage;
 window.__car = car;
+window.__controls = controls;

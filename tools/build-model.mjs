@@ -21,7 +21,7 @@ const s = F.scale;
 const midZ = (F.frontAxleZ + F.rearAxleZ) / 2;
 const groundY = F.axleY - F.tireRadius;
 // Wheel template sits at the centre of the source car; re-centre it on its own hub.
-const WHEEL_CENTER = new Vector3(-0.02254, -0.07727, 0.25581);
+const WHEEL_CENTER = new Vector3(-0.02217, -0.07727, 0.25581); // rim centre of the chosen wheel
 
 /** source world point → car frame (metres; +x forward, +y up, +z right) */
 function toCar(p, part) {
@@ -55,24 +55,48 @@ for (const e of entries) {
     const P = prim.getAttribute('POSITION');
     const N = prim.getAttribute('NORMAL');
     const I = prim.getIndices();
-    const b = bucket(e.part, e.mat);
-    const base = b.pos.length / 3;
+    // Vertices in source world space (with the placement offset) and in car space.
     const tmp = [];
+    const srcPos = [];
+    const carPos = [];
+    const carNor = [];
     for (let i = 0; i < P.getCount(); i++) {
       v.fromArray(P.getElement(i, tmp)).applyMatrix4(world).add(off);
-      b.pos.push(...toCar(v, e.part));
+      srcPos.push(v.clone());
+      carPos.push(toCar(v, e.part));
       if (N) {
         n.fromArray(N.getElement(i, tmp)).applyMatrix3(nmat).normalize();
-        b.nor.push(n.z, n.y, -n.x);
-      } else b.nor.push(0, 1, 0);
+        carNor.push([n.z, n.y, -n.x]);
+      } else carNor.push([0, 1, 0]);
     }
+    // Triangles go to the entry's material, or to a mask's material when their centroid is inside it.
+    const remap = new Map();
     const count = I ? I.getCount() : P.getCount();
     for (let i = 0; i < count; i += 3) {
-      const a = I ? I.getScalar(i) : i;
-      const c1 = I ? I.getScalar(i + 1) : i + 1;
-      const c2 = I ? I.getScalar(i + 2) : i + 2;
-      if (flip) b.idx.push(base + a, base + c2, base + c1);
-      else b.idx.push(base + a, base + c1, base + c2);
+      let tri = [I ? I.getScalar(i) : i, I ? I.getScalar(i + 1) : i + 1, I ? I.getScalar(i + 2) : i + 2];
+      if (flip) tri = [tri[0], tri[2], tri[1]];
+      let mat = e.mat;
+      if (e.masks) {
+        const c = new Vector3().add(srcPos[tri[0]]).add(srcPos[tri[1]]).add(srcPos[tri[2]]).multiplyScalar(1 / 3);
+        for (const mk of e.masks) {
+          if (c.x >= mk.min[0] && c.x <= mk.max[0] && c.y >= mk.min[1] && c.y <= mk.max[1] && c.z >= mk.min[2] && c.z <= mk.max[2]) {
+            mat = mk.mat;
+            break;
+          }
+        }
+      }
+      const b = bucket(e.part, mat);
+      for (const k of tri) {
+        const key = `${b.part}|${b.mat}|${k}`;
+        let idx = remap.get(key);
+        if (idx === undefined) {
+          idx = b.pos.length / 3;
+          b.pos.push(...carPos[k]);
+          b.nor.push(...carNor[k]);
+          remap.set(key, idx);
+        }
+        b.idx.push(idx);
+      }
     }
   }
 }

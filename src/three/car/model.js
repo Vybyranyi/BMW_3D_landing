@@ -11,13 +11,14 @@ const AXLE_Y = 0.3548;
 const TRACK_F = 0.772;
 const TRACK_R = 0.79;
 const TYRE_R = 0.3548;
-const RIM_R = 0.2548;
-const TYRE_W = 0.245;
+const RIM_R = 0.2535; // outer lip of the rim
+const TYRE_W = 0.25; // = rim width, so the beads sit right behind the lips
 
 function createMaterials() {
   const m = {
     paint: new THREE.MeshPhysicalMaterial({ color: 0xf4f5f3, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 }),
     gloss: new THREE.MeshPhysicalMaterial({ color: 0x050506, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.05 }),
+    blade: new THREE.MeshPhysicalMaterial({ color: 0x040405, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.2, envMapIntensity: 0.35 }),
     black: new THREE.MeshStandardMaterial({ color: 0x0b0b0c, roughness: 0.5 }),
     satin: new THREE.MeshStandardMaterial({ color: 0x141518, roughness: 0.6, metalness: 0.1 }),
     under: new THREE.MeshStandardMaterial({ color: 0x0c0c0d, roughness: 0.9 }),
@@ -37,9 +38,9 @@ function createMaterials() {
     drl: new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xe4f0ff, emissiveIntensity: 0 }),
     indicator: new THREE.MeshStandardMaterial({ color: 0x7a4a00, emissive: 0xff8a00, emissiveIntensity: 0.2 }),
     tailDark: new THREE.MeshStandardMaterial({ color: 0x1a0204, roughness: 0.35, metalness: 0.3 }),
-    tailLed: new THREE.MeshStandardMaterial({ color: 0x500000, emissive: 0xff0800, emissiveIntensity: 0 }),
+    tailLed: new THREE.MeshStandardMaterial({ color: 0x3a0000, emissive: 0xff0000, emissiveIntensity: 0 }),
     tailLens: new THREE.MeshPhysicalMaterial({
-      color: 0x8a0008, roughness: 0.06, transparent: true, opacity: 0.88, clearcoat: 1, emissive: 0xd00010, emissiveIntensity: 0, depthWrite: false,
+      color: 0x5c0006, roughness: 0.06, transparent: true, opacity: 0.9, clearcoat: 1, emissive: 0x9a0008, emissiveIntensity: 0, depthWrite: false,
     }),
     rim: new THREE.MeshPhysicalMaterial({ color: 0x9fa3a9, roughness: 0.28, metalness: 0.9, clearcoat: 0.5 }),
     disc: new THREE.MeshStandardMaterial({ color: 0x6e7176, roughness: 0.4, metalness: 0.9 }),
@@ -53,10 +54,11 @@ function createMaterials() {
 function tyreGeometry() {
   const hw = TYRE_W / 2;
   const R = TYRE_R;
-  const r = RIM_R + 0.006;
+  const r = RIM_R - 0.006; // bead tucked under the rim lip — no daylight between rim and tyre
   const prof = [
-    [r, -hw * 0.82], [r + 0.02, -hw * 0.95], [R - 0.035, -hw], [R - 0.012, -hw * 0.94], [R - 0.003, -hw * 0.78],
-    [R, -hw * 0.55], [R, hw * 0.55], [R - 0.003, hw * 0.78], [R - 0.012, hw * 0.94], [R - 0.035, hw], [r + 0.02, hw * 0.95], [r, hw * 0.82],
+    [r, -hw * 0.96], [RIM_R + 0.004, -hw * 0.99], [RIM_R + 0.03, -hw * 1.03], [R - 0.03, -hw * 1.04], [R - 0.01, -hw * 0.96],
+    [R - 0.002, -hw * 0.8], [R, -hw * 0.55], [R, hw * 0.55], [R - 0.002, hw * 0.8], [R - 0.01, hw * 0.96], [R - 0.03, hw * 1.04],
+    [RIM_R + 0.03, hw * 1.03], [RIM_R + 0.004, hw * 0.99], [r, hw * 0.96],
   ].map(([a, b]) => new THREE.Vector2(a, b));
   const g = new THREE.LatheGeometry(prof, 96);
   g.rotateX(Math.PI / 2);
@@ -171,9 +173,9 @@ export async function loadCar({ onProgress } = {}) {
       if (w.front) w.wheel.rotation.y = state.steer;
     }
     courtesy.intensity = Math.max(state.doorF, state.doorR) * 2.2;
-    m.drl.emissiveIntensity = state.lights * 7;
-    m.tailLed.emissiveIntensity = state.lights * 2.2 + state.brake * 6;
-    m.tailLens.emissiveIntensity = state.lights * 0.25 + state.brake * 0.7;
+    m.drl.emissiveIntensity = state.lights * 5;
+    m.tailLed.emissiveIntensity = state.lights * 1.6 + state.brake * 5;
+    m.tailLens.emissiveIntensity = state.lights * 0.3 + state.brake * 0.9;
   }
   apply();
 
