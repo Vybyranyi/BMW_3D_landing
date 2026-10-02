@@ -594,9 +594,8 @@ a {
   position: absolute;
   left: 0;
   top: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  width: 0;
+  height: 0;
   opacity: 0;
   transition: opacity 0.35s var(--ease);
   will-change: transform;
@@ -607,10 +606,11 @@ a {
 }
 
 .hotspot__dot {
-  position: relative;
+  position: absolute;
+  left: -6px;
+  top: -6px;
   width: 12px;
   height: 12px;
-  margin: -6px 0 0 -6px;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
@@ -631,7 +631,12 @@ a {
 }
 
 .hotspot__label {
-  margin-top: -6px;
+  position: absolute;
+  top: -13px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 10px;
   border-radius: 8px;
   background: rgba(8, 9, 12, 0.72);
@@ -643,14 +648,9 @@ a {
   white-space: nowrap;
 }
 
-.hotspot__label::before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 1px;
-  margin: 0 8px 3px -2px;
-  background: rgba(255, 255, 255, 0.5);
-  vertical-align: middle;
+.hotspot.is-flipped .hotspot__label {
+  left: auto;
+  right: 14px;
 }
 
 /* Rail */
@@ -704,6 +704,17 @@ a {
   .rail {
     display: none;
   }
+}
+
+.no-webgl .showroom {
+  height: 100vh;
+}
+
+.no-webgl .showroom__canvas,
+.no-webgl .engine-btn,
+.no-webgl .rail,
+.no-webgl .chapters {
+  display: none;
 }
 
 /* ------------------------------------------------------------ marquee */
@@ -1126,6 +1137,24 @@ a {
 
 .stop.is-current .stop__text {
   max-height: 80px;
+}
+
+@media (max-height: 780px) and (min-width: 861px) {
+  .stop {
+    padding: 4px 0 4px 28px;
+  }
+  .stop::before {
+    top: 10px;
+  }
+  .stop__title {
+    font-size: 15px;
+  }
+  .stop:not(.is-current) .stop__meta {
+    display: none;
+  }
+  .journey__stats div b {
+    font-size: 22px;
+  }
 }
 
 @media (max-width: 860px) {

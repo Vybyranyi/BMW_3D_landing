@@ -99,7 +99,8 @@ function createFloor() {
 
 export function createStage(canvas) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+  const coarse = window.matchMedia('(pointer: coarse)').matches;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1.5 : 1.75));
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1.0;
 
@@ -107,15 +108,10 @@ export function createStage(canvas) {
   scene.background = BG.clone();
   scene.fog = new THREE.Fog(BG, 12, 30);
   scene.environment = studioEnvironment(renderer);
-  scene.environmentIntensity = 1.0;
+  scene.environmentIntensity = 1.35;
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.2);
-  key.position.set(3, 8, 4);
-  scene.add(key);
-  const rim = new THREE.DirectionalLight(0xbcd4ff, 0.8);
-  rim.position.set(-6, 3, -5);
-  scene.add(rim);
-  scene.add(new THREE.HemisphereLight(0xdde6ff, 0x101012, 0.35));
+  // No direct lights: their specular peaks on the clearcoat blow out the bloom. The studio env does the lighting.
+  scene.add(new THREE.HemisphereLight(0xdde6ff, 0x101012, 0.5));
 
   const { floor, uniforms: floorUniforms } = createFloor();
   scene.add(floor);
@@ -123,7 +119,7 @@ export function createStage(canvas) {
   const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 80);
   camera.position.set(6, 1.6, 4);
 
-  const target = new THREE.WebGLRenderTarget(1, 1, { samples: 4, type: THREE.HalfFloatType });
+  const target = new THREE.WebGLRenderTarget(1, 1, { samples: coarse ? 2 : 4, type: THREE.HalfFloatType });
   const composer = new EffectComposer(renderer, target);
   composer.addPass(new RenderPass(scene, camera));
   const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.55, 0.4, 4.0);

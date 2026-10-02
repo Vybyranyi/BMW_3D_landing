@@ -9,14 +9,15 @@ if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
 document.body.classList.add('is-loading');
 
-const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, smoothWheel: true });
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lenis = new Lenis({ lerp: reducedMotion ? 1 : 0.085, wheelMultiplier: 0.9, smoothWheel: !reducedMotion });
 function raf(t) {
   lenis.raf(t);
   requestAnimationFrame(raf);
 }
 requestAnimationFrame(raf);
 lenis.stop();
-window.__lenis = lenis;
+if (import.meta.env.DEV) window.__lenis = lenis;
 
 // Anchor links go through Lenis for smooth travel.
 document.querySelectorAll('a[href^="#"]').forEach((a) => {
@@ -38,11 +39,17 @@ lenis.on('scroll', ({ progress }) => {
 initPassport();
 initRestoration();
 initJourney();
-initShowroom({
-  scrollTo: (y) => lenis.scrollTo(y, { duration: 1.4 }),
-  onReady() {
-    document.getElementById('loader').classList.add('is-done');
-    document.body.classList.remove('is-loading');
-    lenis.start();
-  },
-});
+function ready() {
+  document.getElementById('loader').classList.add('is-done');
+  document.body.classList.remove('is-loading');
+  lenis.start();
+}
+
+try {
+  initShowroom({ scrollTo: (y) => lenis.scrollTo(y, { duration: 1.4 }), onReady: ready });
+} catch (err) {
+  // No WebGL: keep the page, drop the 3D stage.
+  console.error(err);
+  document.documentElement.classList.add('no-webgl');
+  ready();
+}

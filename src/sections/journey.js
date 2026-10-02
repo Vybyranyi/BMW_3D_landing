@@ -279,11 +279,12 @@ export function initJourney() {
   }
 
   let last = performance.now();
+  let pinned = null; // dev only
   function loop(now) {
     requestAnimationFrame(loop);
     const realDt = (now - last) / 1000;
     last = now;
-    if (!visible) return;
+    if (!visible || pinned !== null) return;
     const rect = section.getBoundingClientRect();
     const scrollable = section.offsetHeight - window.innerHeight;
     target = clamp((-rect.top - window.innerHeight * 0.1) / (scrollable * 0.85));
@@ -293,4 +294,12 @@ export function initJourney() {
     odo.textContent = fmt(shown * totalKm);
   }
   requestAnimationFrame(loop);
+  if (import.meta.env.DEV) {
+    window.__journeyAt = (f) => {
+      pinned = f;
+      for (let i = 0; i < 60; i++) draw(f, 0.2);
+      updateStops(f);
+      odo.textContent = fmt(f * totalKm);
+    };
+  }
 }

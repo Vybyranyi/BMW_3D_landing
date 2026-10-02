@@ -250,7 +250,10 @@ export function initShowroom({ onReady, scrollTo }) {
       if (on) {
         tmp.copy(hs.pos).project(stage.camera);
         show = tmp.z < 1 && Math.abs(tmp.x) < 0.95 && Math.abs(tmp.y) < 0.9;
-        if (show) hs.el.style.transform = `translate(${((tmp.x + 1) / 2) * w}px, ${((1 - tmp.y) / 2) * h}px)`;
+        if (show) {
+          hs.el.style.transform = `translate(${((tmp.x + 1) / 2) * w}px, ${((1 - tmp.y) / 2) * h}px)`;
+          hs.el.classList.toggle('is-flipped', tmp.x > 0.25);
+        }
       }
       hs.el.classList.toggle('is-visible', show);
     }

@@ -125,7 +125,7 @@ export function createMaterials() {
     roughness: 0.32,
     metalness: 0.0,
     clearcoat: 1,
-    clearcoatRoughness: 0.04,
+    clearcoatRoughness: 0.09,
     envMapIntensity: 1.0,
   });
   const inner = new THREE.MeshStandardMaterial({ color: 0x0b0b0c, roughness: 0.9, side: THREE.BackSide });
