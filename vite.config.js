@@ -14,7 +14,10 @@ function devSave() {
         let body = '';
         req.on('data', (c) => (body += c));
         req.on('end', () => {
-          fs.writeFileSync(path.resolve('tools', file), body);
+          const dir = path.resolve('tools', file.endsWith('.png') ? 'catalog' : '');
+          fs.mkdirSync(dir, { recursive: true });
+          const png = body.match(/^data:image\/png;base64,(.*)$/s);
+          fs.writeFileSync(path.join(dir, file), png ? Buffer.from(png[1], 'base64') : body);
           res.end('ok');
         });
       });

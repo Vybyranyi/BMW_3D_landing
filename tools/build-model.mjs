@@ -85,6 +85,7 @@ for (const e of entries) {
           }
         }
       }
+      if (mat === 'skip') continue;
       const b = bucket(e.part, mat);
       for (const k of tri) {
         const key = `${b.part}|${b.mat}|${k}`;

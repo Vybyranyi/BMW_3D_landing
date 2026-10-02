@@ -65,6 +65,7 @@ controls.addEventListener('change', render);
 // --- helpers for automation
 window.render = render;
 window.scene = scene;
+window.renderer = renderer;
 window.THREE = THREE;
 window.camera = camera;
 window.controls = controls;
@@ -320,9 +321,14 @@ window.resolveConfig = () => {
       const twin = bySrc.get(p.mirrorOf);
       const twinIds = resolveSrc(twin.src);
       over = {};
+      const used = new Set();
       for (const [id, m] of Object.entries(twin.over || {})) {
-        const k = twinIds.indexOf(+id);
-        if (k >= 0 && ids[k] !== undefined) over[ids[k]] = m;
+        // mirrored twins list their meshes in a different order — match by triangle count
+        const match = ids.find((i) => !used.has(i) && M[i].tris === M[+id].tris);
+        if (match !== undefined) {
+          used.add(match);
+          over[match] = m;
+        }
       }
     }
     for (const id of ids) {
@@ -359,4 +365,63 @@ window.exportConfig = async () => {
   const entries = resolveConfig().map(({ node, part, mat, off, masks }) => ({ node, part, mat, off, masks }));
   await fetch('/__save?file=f30-selection.json', { method: 'POST', body: JSON.stringify({ frame: FRAME, entries }) });
   return entries.length;
+};
+
+// --- parts catalogue: every option of a category on one lettered sheet (PNG) for the owner to pick from
+window.units = () => {
+  const out = K.map((k) => ({ code: `k${k.ci}`, ids: k.ids }));
+  TOP.forEach((t) => {
+    if (t.gi === 28) return;
+    const kids = sub(t.gi);
+    if (kids.length > 1) kids.forEach((s, ci) => out.push({ code: `g${t.gi}.${ci}`, ids: s.ids }));
+    else out.push({ code: `g${t.gi}`, ids: t.ids });
+  });
+  for (const u of out) {
+    u.box = new THREE.Box3();
+    u.ids.forEach((i) => u.box.union(M[i].box));
+    u.size = u.box.getSize(new THREE.Vector3()).multiplyScalar(1000);
+    u.center = u.box.getCenter(new THREE.Vector3()).multiplyScalar(1000);
+  }
+  return out;
+};
+const inRange = (v, [a, b]) => v >= a && v <= b;
+window.findUnits = ({ x, y, z, where = () => true }) =>
+  units().filter((u) => inRange(u.size.x, x) && inRange(u.size.y, y) && inRange(u.size.z, z) && where(u));
+
+window.catalogPNG = async (file, title, list, dir) => {
+  const n = list.length;
+  const cols = n <= 4 ? 2 : n <= 9 ? 3 : n <= 16 ? 4 : 5;
+  const rows = Math.ceil(n / cols);
+  const letters = list.map((_, i) => String.fromCharCode(65 + i));
+  sheet(list.map((u, i) => ({ label: letters[i], ids: u.ids })), cols, rows, dir);
+  labels.forEach((l) => (l.style.display = 'none'));
+  const src = renderer.domElement;
+  const c = document.createElement('canvas');
+  const head = 70;
+  c.width = src.width;
+  c.height = src.height + head;
+  const g = c.getContext('2d');
+  g.fillStyle = '#16181c';
+  g.fillRect(0, 0, c.width, c.height);
+  g.drawImage(src, 0, head);
+  g.fillStyle = '#fff';
+  g.font = 'bold 40px sans-serif';
+  g.fillText(title, 24, 50);
+  const cw = src.width / cols;
+  const ch = src.height / rows;
+  list.forEach((u, i) => {
+    const x = (i % cols) * cw;
+    const y = head + Math.floor(i / cols) * ch;
+    g.fillStyle = '#e7222e';
+    g.fillRect(x + 10, y + 10, 64, 64);
+    g.fillStyle = '#fff';
+    g.font = 'bold 46px sans-serif';
+    g.fillText(letters[i], x + 26, y + 58);
+    g.fillStyle = 'rgba(0,0,0,0.55)';
+    g.font = '24px monospace';
+    g.fillText(u.code, x + 86, y + 44);
+  });
+  await fetch(`/__save?file=${file}.png`, { method: 'POST', body: c.toDataURL('image/png') });
+  labels.forEach((l) => l.remove());
+  return list.map((u, i) => `${letters[i]}=${u.code}`).join(' ');
 };

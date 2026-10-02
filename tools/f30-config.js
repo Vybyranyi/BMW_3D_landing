@@ -20,7 +20,12 @@ export const PARTS = [
     skip: [551, 553, 568, 556, 567, 554, 557, 558, 559, 564, 566],
     // 549 = roof strips + shark fin (body colour), 560 = interior pillar trims (black)
     over: { 549: 'paint', 550: 'satin', 552: 'satin', 555: 'interior', 560: 'interior', 561: 'satin', 562: 'satin', 563: 'metal', 565: 'under', 569: 'satin' },
-    masks: [{ mesh: 548, mat: 'interior', min: [-0.0275, -0.0425, 0.2625], max: [-0.0175, -0.0383, 0.269] }], // rear-view mirror
+    masks: [
+      { mesh: 548, mat: 'interior', min: [-0.0275, -0.0425, 0.2625], max: [-0.0175, -0.0383, 0.269] }, // rear-view mirror
+      { mesh: 549, mat: 'satin', min: [-1, -0.0545, 0.2835], max: [1, -0.05, 0.2975] }, // wipers + cowl seal
+      { mesh: 549, mat: 'skip', min: [-0.0445, -0.043, 0.21], max: [-0.0375, -0.034, 0.275] }, // roof strips: none
+      { mesh: 549, mat: 'skip', min: [-0.0075, -0.043, 0.21], max: [-0.0005, -0.034, 0.275] },
+    ],
   },
   { part: 'body', src: 'k149', mat: 'paint' }, // flat roof
   { part: 'body', src: 'g67', mat: 'glassRoof', off: [0.0646, -0.11995, 0] }, // sunroof glass
@@ -29,8 +34,6 @@ export const PARTS = [
   { part: 'body', src: 'g19.18', mat: 'paint', off: [DX19, 0, 0] },
   {
     part: 'body', src: 'g19.20', mat: 'paint', off: [DX19, 0, 0], over: { 154: 'black', 155: 'chrome', 156: LENS, 157: 'black' }, // M Sport front bumper
-    // lower band of the bumper (corners under the side intakes) is black, like the M Performance flaps
-    masks: [{ mesh: 153, mat: 'gloss', min: [-1, -1, -1], max: [1, -0.0693, 1] }],
   },
   { part: 'body', src: 'g20.0', mat: 'gloss', off: [DX19, -0.0007, -0.0424] }, // M Performance front splitter, a touch lower
   { part: 'body', src: 'g19.6', mat: 'black', off: [DX19, 0, -0.0175] }, // black kidneys
@@ -61,8 +64,7 @@ export const PARTS = [
   { part: 'body', src: 'k27', mat: 'interior' }, // gear selector
 
   /* ---------------------------------------------------------------- engine bay */
-  { part: 'body', src: 'k34', mat: 'metal' }, // 4-cylinder block (B48-like)
-  { part: 'body', src: 'k35', mat: 'satin' }, // its intake, cover and front end
+  { part: 'body', src: 'k37', mat: 'satin' }, // engine cover
 
   /* ---------------------------------------------------------------- opening panels */
   { part: 'hood', src: 'g19.19', mat: 'paint', off: [DX19, 0, 0] },

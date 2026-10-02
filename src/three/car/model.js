@@ -18,7 +18,7 @@ function createMaterials() {
   const m = {
     paint: new THREE.MeshPhysicalMaterial({ color: 0xf4f5f3, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 }),
     gloss: new THREE.MeshPhysicalMaterial({ color: 0x050506, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.05 }),
-    blade: new THREE.MeshPhysicalMaterial({ color: 0x040405, roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.2, envMapIntensity: 0.35 }),
+    blade: new THREE.MeshPhysicalMaterial({ color: 0x030304, roughness: 0.45, clearcoat: 0.4, clearcoatRoughness: 0.3, envMapIntensity: 0.15 }),
     black: new THREE.MeshStandardMaterial({ color: 0x0b0b0c, roughness: 0.5 }),
     satin: new THREE.MeshStandardMaterial({ color: 0x141518, roughness: 0.6, metalness: 0.1 }),
     under: new THREE.MeshStandardMaterial({ color: 0x0c0c0d, roughness: 0.9 }),
@@ -42,7 +42,7 @@ function createMaterials() {
     tailLens: new THREE.MeshPhysicalMaterial({
       color: 0x5c0006, roughness: 0.06, transparent: true, opacity: 0.9, clearcoat: 1, emissive: 0x9a0008, emissiveIntensity: 0, depthWrite: false,
     }),
-    rim: new THREE.MeshPhysicalMaterial({ color: 0x9fa3a9, roughness: 0.28, metalness: 0.9, clearcoat: 0.5 }),
+    rim: new THREE.MeshPhysicalMaterial({ color: 0x141518, roughness: 0.32, metalness: 0.55, clearcoat: 1, clearcoatRoughness: 0.08 }),
     disc: new THREE.MeshStandardMaterial({ color: 0x6e7176, roughness: 0.4, metalness: 0.9 }),
     tire: new THREE.MeshStandardMaterial({ color: 0x111112, roughness: 0.9, side: THREE.DoubleSide }),
     caliper: new THREE.MeshPhysicalMaterial({ color: 0x2b2d31, roughness: 0.4, metalness: 0.4, clearcoat: 0.6 }),
