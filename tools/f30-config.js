@@ -27,13 +27,18 @@ export const PARTS = [
       { mesh: 549, mat: 'skip', min: [-0.0075, -0.043, 0.21], max: [-0.0005, -0.034, 0.275] },
     ],
   },
-  { part: 'body', src: 'k149', mat: 'paint' }, // flat roof
-  { part: 'body', src: 'g67', mat: 'glassRoof', off: [0.0646, -0.11995, 0] }, // sunroof glass
+  { part: 'body', src: 'g50.1', mat: 'paint', off: [0.064621, -0.07687, 0] }, // flat roof with a real sunroof opening
+  { part: 'body', src: 'g67', mat: 'glassRoof', off: [0.0646, -0.12035, 0] }, // closed sunroof glass, flush
   { part: 'body', src: 'g68.0', mat: 'headliner', off: [0.1201, 0, 0] }, // white headliner with sunroof opening
   { part: 'body', src: 'g19.17', mat: 'paint', off: [DX19, 0, 0] }, // plain front fenders
   { part: 'body', src: 'g19.18', mat: 'paint', off: [DX19, 0, 0] },
   {
-    part: 'body', src: 'g19.20', mat: 'paint', off: [DX19, 0, 0], over: { 154: 'black', 155: 'chrome', 156: LENS, 157: 'black' }, // M Sport front bumper
+    part: 'body', src: 'g19.20', mat: 'paint', off: [DX19, 0, 0], over: { 154: 'black', 155: 'chrome', 156: LENS, 157: 'fog' }, // M Sport front bumper
+    // M Performance splitter wraps the lower bumper corners under the fog lights (black), centre stays white
+    masks: [
+      { mesh: 153, mat: 'gloss', planes: [{ n: [0, 1, 0], p: [0, -0.0694, 0] }, { n: [0.0038, 0.0035, 0], p: [-0.0345, -0.0694, 0] }] },
+      { mesh: 153, mat: 'gloss', planes: [{ n: [0, 1, 0], p: [0, -0.0694, 0] }, { n: [-0.0038, 0.0035, 0], p: [-0.0104, -0.0694, 0] }] },
+    ],
   },
   { part: 'body', src: 'g20.0', mat: 'gloss', off: [DX19, -0.0007, -0.0424] }, // M Performance front splitter, a touch lower
   { part: 'body', src: 'g19.6', mat: 'black', off: [DX19, 0, -0.0175] }, // black kidneys
@@ -43,13 +48,14 @@ export const PARTS = [
   },
   { part: 'body', src: 'g19.16', mat: 'headInner', off: [DX19, 0, 0], over: { 144: 'black', 146: 'drl', 147: 'drl', 148: 'chrome', 149: LENS } },
   { part: 'body', src: 'k64', mat: 'paint', over: { 386: 'blade' } }, // white sills + black M Performance blades
-  { part: 'body', src: 'g5', mat: 'paint', off: [DX19, -0.0181, 0], over: { 14: 'skip', 15: 'skip', 17: 'satin', 18: 'gloss', 19: 'gloss' } }, // rear bumper
-  { part: 'body', src: 'm256', mat: 'chrome', off: [0.004, 0, 0] }, // dual exhaust tips, left
-  { part: 'body', src: 'g27.1', mat: 'gloss', off: [0, 0, 0.172] }, // M Performance diffuser
-  { part: 'body', src: 'k85', mat: 'tailDark', over: { 434: 'tailLed', 435: 'tailLed', 436: 'tailLed', 433: 'chrome' } }, // outer taillights
+  { part: 'body', src: 'g6.3', mat: 'paint', off: [DX19, 0, 0], over: { 26: 'satin', 27: 'reflector' } }, // M Sport rear bumper (catalogue C)
+  { part: 'body', src: 'm256', mat: 'chrome', off: [0.004, 0, 0.001] }, // dual exhaust tips, left (catalogue F)
+  { part: 'body', src: 'k12', mat: 'gloss' }, // diffuser (catalogue A)
+  // outer taillights: the L-shaped light guide (437) glows, the back plates (434/435) stay dark red
+  { part: 'body', src: 'k85', mat: 'tailDark', over: { 433: 'headInner', 434: 'tailDark', 435: 'tailDark', 436: 'tailLed', 437: 'tailLed' } },
   { part: 'body', src: 'k89', mat: 'tailDark', mirrorOf: 'k85' },
-  { part: 'body', src: 'k83', mat: 'tailLens', alignTo: 'k85' }, // red lenses
-  { part: 'body', src: 'k86', mat: 'tailLens', alignTo: 'k89' },
+  { part: 'body', src: 'k83', mat: 'tailLens', alignTo: 'k85', dy: -0.005377 }, // red lenses, height fitted to the housing
+  { part: 'body', src: 'k86', mat: 'tailLens', alignTo: 'k89', dy: -0.006372 },
   { part: 'body', src: 'k107', mat: 'glass' }, // windshield
   { part: 'body', src: 'k106', mat: 'glass' }, // rear window
   { part: 'body', src: 'k131', mat: 'satin' }, // wipers
@@ -74,8 +80,8 @@ export const PARTS = [
   },
   { part: 'trunk', src: 'k84', mat: 'tailDark', over: { 427: 'tailLed', 428: 'tailLed', 431: 'tailLed' } }, // inner taillights
   { part: 'trunk', src: 'k88', mat: 'tailDark', mirrorOf: 'k84' },
-  { part: 'trunk', src: 'k138', mat: 'tailLens', alignTo: 'k84' },
-  { part: 'trunk', src: 'k139', mat: 'tailLens', alignTo: 'k88' },
+  { part: 'trunk', src: 'k138', mat: 'tailLens', alignTo: 'k84', dy: -0.01121 },
+  { part: 'trunk', src: 'k139', mat: 'tailLens', alignTo: 'k88', dy: -0.011227 },
 
   {
     part: 'doorFL', src: 'k98', mat: 'paint',

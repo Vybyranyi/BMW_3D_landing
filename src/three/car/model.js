@@ -37,6 +37,9 @@ function createMaterials() {
     }),
     drl: new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xe4f0ff, emissiveIntensity: 0 }),
     indicator: new THREE.MeshStandardMaterial({ color: 0x7a4a00, emissive: 0xff8a00, emissiveIntensity: 0.2 }),
+    // fog lamp: polished reflector that lights up with the headlights
+    fog: new THREE.MeshStandardMaterial({ color: 0xc9d0d8, roughness: 0.15, metalness: 0.9, emissive: 0xf4f7ff, emissiveIntensity: 0 }),
+    reflector: new THREE.MeshPhysicalMaterial({ color: 0x7a0008, roughness: 0.25, clearcoat: 1, emissive: 0x300003 }),
     tailDark: new THREE.MeshStandardMaterial({ color: 0x1a0204, roughness: 0.35, metalness: 0.3 }),
     tailLed: new THREE.MeshStandardMaterial({ color: 0x3a0000, emissive: 0xff0000, emissiveIntensity: 0 }),
     tailLens: new THREE.MeshPhysicalMaterial({
@@ -174,6 +177,7 @@ export async function loadCar({ onProgress } = {}) {
     }
     courtesy.intensity = Math.max(state.doorF, state.doorR) * 2.2;
     m.drl.emissiveIntensity = state.lights * 5;
+    m.fog.emissiveIntensity = state.lights * 2.4;
     m.tailLed.emissiveIntensity = state.lights * 1.6 + state.brake * 5;
     m.tailLens.emissiveIntensity = state.lights * 0.3 + state.brake * 0.9;
   }

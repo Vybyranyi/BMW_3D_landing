@@ -56,3 +56,11 @@ loop();
 window.__stage = stage;
 window.__car = car;
 window.__controls = controls;
+
+// Dev: save the current view as tools/catalog/<name>.png
+window.__shot = async (name) => {
+  stage.render();
+  const url = stage.renderer.domElement.toDataURL('image/png');
+  await fetch(`/__save?file=${name}.png`, { method: 'POST', body: url });
+  return name;
+};

@@ -43,6 +43,7 @@ const world = new Matrix4();
 const nmat = new Matrix3();
 const v = new Vector3();
 const n = new Vector3();
+const tmpV = new Vector3();
 for (const e of entries) {
   const node = srcNodes[e.node];
   const mesh = node.getMesh();
@@ -69,35 +70,88 @@ for (const e of entries) {
         carNor.push([n.z, n.y, -n.x]);
       } else carNor.push([0, 1, 0]);
     }
-    // Triangles go to the entry's material, or to a mask's material when their centroid is inside it.
+    // Mask regions are convex (intersection of half-spaces n·(v−p) ≤ 0); triangles crossing a
+    // boundary are clipped exactly, so painted edges are straight instead of following the mesh.
+    const masks = (e.masks || []).map((mk) => ({
+      mat: mk.mat,
+      planes: mk.planes
+        ? mk.planes.map(({ n: pn, p: pp }) => ({ n: new Vector3(...pn).normalize(), p: new Vector3(...pp) }))
+        : [0, 1, 2].flatMap((a) => {
+            const lo = new Vector3();
+            const hi = new Vector3();
+            lo.setComponent(a, -1);
+            hi.setComponent(a, 1);
+            const pmin = new Vector3(...mk.min);
+            const pmax = new Vector3(...mk.max);
+            return [{ n: lo, p: pmin }, { n: hi, p: pmax }];
+          }),
+    }));
+    const vert = (k) => ({ s: srcPos[k], c: carPos[k], n: carNor[k], k });
+    const lerpV = (a, b, t) => ({
+      s: a.s.clone().lerp(b.s, t),
+      c: a.c.map((x, i) => x + (b.c[i] - x) * t),
+      n: a.n.map((x, i) => x + (b.n[i] - x) * t),
+    });
+    const split = (poly, pl) => {
+      const inside = [];
+      const outside = [];
+      for (let i = 0; i < poly.length; i++) {
+        const a = poly[i];
+        const b = poly[(i + 1) % poly.length];
+        const da = pl.n.dot(tmpV.copy(a.s).sub(pl.p));
+        const db = pl.n.dot(tmpV.copy(b.s).sub(pl.p));
+        (da <= 0 ? inside : outside).push(a);
+        if ((da <= 0) !== (db <= 0)) {
+          const cut = lerpV(a, b, da / (da - db));
+          inside.push(cut);
+          outside.push(cut);
+        }
+      }
+      return [inside, outside];
+    };
     const remap = new Map();
+    const emit = (poly, mat) => {
+      if (mat === 'skip' || poly.length < 3) return;
+      const b = bucket(e.part, mat);
+      const ids = poly.map((vx) => {
+        if (vx.k !== undefined) {
+          const key = `${b.part}|${b.mat}|${vx.k}`;
+          let idx = remap.get(key);
+          if (idx === undefined) {
+            idx = b.pos.length / 3;
+            b.pos.push(...vx.c);
+            b.nor.push(...vx.n);
+            remap.set(key, idx);
+          }
+          return idx;
+        }
+        const idx = b.pos.length / 3;
+        b.pos.push(...vx.c);
+        b.nor.push(...vx.n);
+        return idx;
+      });
+      for (let t = 1; t < ids.length - 1; t++) b.idx.push(ids[0], ids[t], ids[t + 1]);
+    };
     const count = I ? I.getCount() : P.getCount();
     for (let i = 0; i < count; i += 3) {
       let tri = [I ? I.getScalar(i) : i, I ? I.getScalar(i + 1) : i + 1, I ? I.getScalar(i + 2) : i + 2];
       if (flip) tri = [tri[0], tri[2], tri[1]];
-      let mat = e.mat;
-      if (e.masks) {
-        const c = new Vector3().add(srcPos[tri[0]]).add(srcPos[tri[1]]).add(srcPos[tri[2]]).multiplyScalar(1 / 3);
-        for (const mk of e.masks) {
-          if (c.x >= mk.min[0] && c.x <= mk.max[0] && c.y >= mk.min[1] && c.y <= mk.max[1] && c.z >= mk.min[2] && c.z <= mk.max[2]) {
-            mat = mk.mat;
-            break;
+      let pieces = [tri.map(vert)];
+      for (const mk of masks) {
+        const rest = [];
+        for (const piece of pieces) {
+          let cur = piece;
+          for (const pl of mk.planes) {
+            const [inside, outside] = split(cur, pl);
+            if (outside.length >= 3) rest.push(outside);
+            cur = inside;
+            if (cur.length < 3) break;
           }
+          if (cur.length >= 3) emit(cur, mk.mat);
         }
+        pieces = rest;
       }
-      if (mat === 'skip') continue;
-      const b = bucket(e.part, mat);
-      for (const k of tri) {
-        const key = `${b.part}|${b.mat}|${k}`;
-        let idx = remap.get(key);
-        if (idx === undefined) {
-          idx = b.pos.length / 3;
-          b.pos.push(...carPos[k]);
-          b.nor.push(...carNor[k]);
-          remap.set(key, idx);
-        }
-        b.idx.push(idx);
-      }
+      for (const piece of pieces) emit(piece, e.mat);
     }
   }
 }
