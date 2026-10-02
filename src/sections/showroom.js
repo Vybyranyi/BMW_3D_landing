@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createStage } from '../three/stage.js';
 import { buildCar } from '../three/car/index.js';
+import { loadCar } from '../three/car/model.js';
 import { Smoke } from '../three/smoke.js';
 import { CHAPTERS, HOTSPOTS, HERO, CAR } from '../content.js';
 
@@ -36,8 +37,8 @@ const camera = track([
   [0.45, [-48, 15, 6.4, -0.1, 0.75, 0]],
   [0.5, [-62, 22, 4.2, 0.0, 0.85, -0.3]],
   [0.54, [-68, 20, 4.0, 0.0, 0.85, -0.3]],
-  [0.59, [-90, 3, 6.8, 0, 0.6, 0]],
-  [0.68, [-98, 4, 6.2, 0, 0.56, 0]],
+  [0.59, [-90, 3, 8.6, 0, 0.62, 0]],
+  [0.68, [-98, 4, 8.0, 0, 0.58, 0]],
   [0.74, [-146, 9, 5.4, -1.7, 0.5, 0]],
   [0.82, [-160, 7, 4.8, -2.0, 0.45, 0]],
   [0.88, [-182, 30, 5.4, -1.9, 0.9, 0]],
@@ -57,7 +58,7 @@ const tracks = {
   // Horizontal frame shift (fraction of width) so the car sits opposite the chapter text.
   shift: track([
     [0, 0.1], [0.06, 0.1], [0.11, 0.15], [0.2, 0.15], [0.25, 0.14], [0.345, 0.14], [0.39, 0],
-    [0.43, -0.14], [0.54, -0.14], [0.575, 0.12], [0.685, 0.12], [0.72, -0.13], [0.83, -0.13],
+    [0.43, -0.14], [0.54, -0.14], [0.575, 0.19], [0.685, 0.19], [0.72, -0.13], [0.83, -0.13],
     [0.855, 0.12], [0.92, 0.12], [0.95, 0], [1, 0],
   ]),
 };
@@ -121,8 +122,18 @@ export function initShowroom({ onReady, scrollTo }) {
   if (import.meta.env.DEV) window.__stage = stage;
   let car;
   let smoke;
-  const build = () => {
-    car = buildCar({ exhaust: CAR.exhaust });
+  const build = async () => {
+    try {
+      const label = document.querySelector('.loader__text');
+      car = await loadCar({
+        onProgress: (f) => {
+          if (label) label.textContent = `Заводжу машину… ${Math.round(f * 100)}%`;
+        },
+      });
+    } catch (err) {
+      console.error('Model failed to load, using the procedural car', err);
+      car = buildCar({ exhaust: CAR.exhaust });
+    }
     stage.scene.add(car.group);
     smoke = new Smoke(stage.scene, car.exhaustTips);
     stage.renderer.compile(stage.scene, stage.camera);
@@ -262,8 +273,8 @@ export function initShowroom({ onReady, scrollTo }) {
   }
 
   // Build after first paint so the loader can show.
-  setTimeout(() => {
-    build();
+  setTimeout(async () => {
+    await build();
     onReady?.();
     requestAnimationFrame(frame);
     setTimeout(() => startEngine(true), 900);

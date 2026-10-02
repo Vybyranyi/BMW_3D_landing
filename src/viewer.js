@@ -2,14 +2,14 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createStage } from './three/stage.js';
-import { buildCar } from './three/car/index.js';
+import { loadCar } from './three/car/model.js';
 import { Smoke } from './three/smoke.js';
 
 const canvas = document.getElementById('c');
 const stage = createStage(canvas);
 const t0 = performance.now();
-const car = buildCar();
-console.log('car built in', Math.round(performance.now() - t0), 'ms');
+const car = await loadCar();
+console.log('car loaded in', Math.round(performance.now() - t0), 'ms');
 stage.scene.add(car.group);
 const smoke = new Smoke(stage.scene, car.exhaustTips);
 

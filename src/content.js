@@ -36,7 +36,7 @@ export const CHAPTERS = [
     to: 0.2,
     side: 'left',
     title: 'Обличчя',
-    text: 'M-пакет з агресивним переднім бампером, світлодіодні фари з «ангельськими очима» і класичні ніздрі. Знизу — сплітер M Performance.',
+    text: 'M-пакет з агресивним переднім бампером, світлодіодні фари з «ангельськими очима» і чорні ніздрі. Знизу — сплітер M Performance.',
     tags: ['M Sport', 'LED', 'M Performance'],
   },
   {
@@ -60,8 +60,8 @@ export const CHAPTERS = [
     to: 0.54,
     side: 'right',
     title: 'Салон',
-    text: 'Чорний салон і кермо M Performance. Місце водія — найкраще місце в цій машині.',
-    tags: ['Чорний салон', 'Кермо M Performance'],
+    text: 'Чорний салон, світла стеля і люк над головою. Кермо M Performance — місце водія найкраще в цій машині.',
+    tags: ['Чорний салон', 'Біла стеля', 'Люк', 'Кермо M Performance'],
   },
   {
     id: 'profile',
@@ -106,17 +106,17 @@ export const CHAPTERS = [
 
 /* Мітки, що «прилипають» до деталей машини (координати в метрах відносно центру авто). */
 export const HOTSPOTS = [
-  { chapter: 'face', label: 'Сплітер M Performance', at: [2.25, 0.2, -0.42] },
-  { chapter: 'face', label: 'LED-фари', at: [2.12, 0.71, 0.55] },
-  { chapter: 'face', label: 'Ніздрі', at: [2.2, 0.68, -0.15] },
-  { chapter: 'engine', label: 'B48 · 2.0 TwinPower Turbo', at: [1.5, 0.84, 0.02] },
-  { chapter: 'cabin', label: 'Кермо M Performance', at: [0.18, 1.04, -0.37] },
-  { chapter: 'cabin', label: 'Спортивні сидіння', at: [-0.35, 1.0, -0.37] },
-  { chapter: 'profile', label: 'Лезвія M Performance', at: [-0.2, 0.18, -0.93] },
-  { chapter: 'profile', label: 'Hofmeister kink', at: [-1.13, 1.1, -0.8] },
-  { chapter: 'rear', label: 'Дифузор M Performance', at: [-2.42, 0.25, 0.2] },
-  { chapter: 'rear', label: 'Подвійний вихлоп', at: [-2.46, 0.27, -0.54] },
-  { chapter: 'rear', label: 'LED-ліхтарі', at: [-2.3, 0.93, -0.72] },
+  { chapter: 'face', label: 'Сплітер M Performance', at: [2.2, 0.2, -0.45] },
+  { chapter: 'face', label: 'LED-фари', at: [1.98, 0.7, 0.62] },
+  { chapter: 'face', label: 'Чорні ніздрі', at: [2.13, 0.68, -0.16] },
+  { chapter: 'engine', label: 'B48 · 2.0 TwinPower Turbo', at: [1.45, 0.92, 0.05] },
+  { chapter: 'cabin', label: 'Кермо M', at: [0.25, 1.0, -0.42] },
+  { chapter: 'cabin', label: 'Спортивні сидіння', at: [-0.35, 1.0, -0.42] },
+  { chapter: 'profile', label: 'Лезвія M Performance', at: [-0.2, 0.22, -0.93] },
+  { chapter: 'profile', label: 'Люк', at: [0.05, 1.47, -0.15] },
+  { chapter: 'rear', label: 'Дифузор M Performance', at: [-2.42, 0.28, 0.2] },
+  { chapter: 'rear', label: 'Подвійний вихлоп', at: [-2.46, 0.33, -0.45] },
+  { chapter: 'rear', label: 'LED-ліхтарі', at: [-2.28, 0.9, -0.7] },
 ];
 
 export const SPECS = {
@@ -148,6 +148,8 @@ export const MODS = [
   { name: 'Бокові накладки («лезвія»)', detail: 'M Performance', status: 'installed' },
   { name: 'Задній дифузор', detail: 'M Performance', status: 'installed' },
   { name: 'Кермо', detail: 'M Performance', status: 'installed' },
+  { name: 'Ніздрі', detail: 'Чорні', status: 'installed' },
+  { name: 'Люк', detail: 'Електричний, біла стеля', status: 'stock' },
 ];
 
 /*

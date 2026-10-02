@@ -3,3 +3,6 @@ dist
 .DS_Store
 *.log
 .vercel
+
+# 100+ MB source kit; the trimmed build lives in src/assets/models/f30.glb
+bmw-3-series-f30-2011-2018/

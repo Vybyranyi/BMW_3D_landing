@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Model inspector</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #202328; overflow: hidden; }
+      canvas { width: 100vw; height: 100vh; display: block; }
+      #info { position: fixed; top: 8px; left: 8px; color: #ddd; font: 12px monospace; white-space: pre; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <canvas id="c"></canvas>
+    <div id="info">loading…</div>
+    <script type="module" src="/tools/inspector.js"></script>
+  </body>
+</html>
